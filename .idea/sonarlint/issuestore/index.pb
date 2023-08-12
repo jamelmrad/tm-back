@@ -31,3 +31,5 @@ Imission-service/src/main/java/com/telcotek/missionservice/model/Task.java,4\f\
 [mission-service/src/main/java/com/telcotek/missionservice/controller/MissionController.java,6\5\65c70a1740ad5814176c6cc09a42dbc959949299
 …
 Umission-service/src/main/java/com/telcotek/missionservice/service/MissionService.java,7\f\7fefe3d142408f5265bee7650340a07a6d7b5067
+z
+Jua-service/src/main/java/com/telcotek/uaservice/config/SecurityConfig.java,9\6\963d8ab7fdd0c1d4f2ba5d32d632d7e245af9c3b
