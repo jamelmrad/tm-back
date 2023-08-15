@@ -19,7 +19,6 @@
         <module>mission-service</module>
         <module>user-service</module>
         <module>upload-service</module>
-        <module>ua-service</module>
         <module>discovery-server</module>
         <module>api-gateway</module>
     </modules>

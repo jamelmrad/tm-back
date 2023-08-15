@@ -1,6 +1,5 @@
 package com.telcotek.apigateway.service;
 
-
 import com.telcotek.apigateway.model.Visitor;
 import com.telcotek.apigateway.repository.VisitorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,4 +16,3 @@ public class VisitorService {
     }
 
 }
-

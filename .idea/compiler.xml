@@ -10,11 +10,13 @@
         <module name="api-gateway" />
         <module name="upload-service" />
         <module name="user-service" />
-        <module name="ua-service" />
         <module name="discovery-server" />
         <module name="mission-service" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="ua-service" target="17" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">

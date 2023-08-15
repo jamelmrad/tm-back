@@ -17,7 +17,6 @@ public class VisitorLogger implements HandlerInterceptor {
     @Autowired
     private VisitorService visitorService;
 
-    @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
 
