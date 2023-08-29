@@ -1,14 +1,9 @@
 package com.telcotek.identityservice.controllers;
 
-import com.telcotek.identityservice.models.ERole;
-import com.telcotek.identityservice.models.Role;
-import com.telcotek.identityservice.models.User;
-import com.telcotek.identityservice.payload.request.LoginRequest;
-import com.telcotek.identityservice.payload.request.SignupRequest;
-import com.telcotek.identityservice.payload.response.MessageResponse;
-import com.telcotek.identityservice.payload.response.UserInfoResponse;
-import com.telcotek.identityservice.repository.RoleRepository;
-import com.telcotek.identityservice.repository.UserRepository;
+import com.telcotek.identityservice.models.*;
+import com.telcotek.identityservice.payload.request.*;
+import com.telcotek.identityservice.payload.response.*;
+import com.telcotek.identityservice.repository.*;
 import com.telcotek.identityservice.security.jwt.JwtUtils;
 import com.telcotek.identityservice.security.services.UserDetailsImpl;
 import jakarta.validation.Valid;
@@ -90,28 +85,24 @@ public class AuthController {
     Set<Role> roles = new HashSet<>();
 
     if (strRoles == null) {
-      Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-          .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+      Role userRole = roleRepository.findByName(ERole.ROLE_USER);
       roles.add(userRole);
     } else {
       strRoles.forEach(role -> {
         switch (role) {
-        case "admin":
-          Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-              .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-          roles.add(adminRole);
+          case "admin":
+            Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN);
+            roles.add(adminRole);
 
-          break;
-        case "mod":
-          Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
-              .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-          roles.add(modRole);
+            break;
+          case "mod":
+            Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR);
+            roles.add(modRole);
 
-          break;
-        default:
-          Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-              .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-          roles.add(userRole);
+            break;
+          default:
+            Role userRole = roleRepository.findByName(ERole.ROLE_USER);
+            roles.add(userRole);
         }
       });
     }

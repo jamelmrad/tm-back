@@ -1,5 +1,6 @@
 package com.telcotek.identityservice.payload.request;
 
+import jakarta.validation.constraints.*;
 import lombok.Data;
 
 import java.util.Set;
