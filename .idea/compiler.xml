@@ -7,24 +7,29 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="authentication-service" />
+        <module name="discovery-server" />
+        <module name="mission-service" />
         <module name="api-gateway" />
         <module name="upload-service" />
         <module name="user-service" />
-        <module name="discovery-server" />
         <module name="identity-service" />
-        <module name="mission-service" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="identity-service" target="17" />
+      <module name="spring-boot-login-example" target="17" />
       <module name="ua-service" target="17" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="api-gateway" options="-parameters" />
+      <module name="authentication-service" options="-parameters" />
       <module name="discovery-server" options="-parameters" />
       <module name="identity-service" options="-parameters" />
       <module name="mission-service" options="-parameters" />
+      <module name="spring-boot-login-example" options="-parameters" />
       <module name="ua-service" options="-parameters" />
       <module name="upload-service" options="-parameters" />
       <module name="user-service" options="-parameters" />
