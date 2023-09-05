@@ -1,7 +1,6 @@
 package com.telcotek.authenticationservice.models;
 
 public enum ERole {
-    ROLE_USER,
-    ROLE_MODERATOR,
-    ROLE_ADMIN
+    ROLE_CLIENT,
+    ROLE_MODERATOR
 }

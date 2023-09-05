@@ -9,6 +9,8 @@ import com.telcotek.missionservice.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,9 +26,15 @@ public class MissionController {
     @Autowired
     TaskService taskService;
 
-    @PostMapping("/add/mocks")
-    public void mock(@RequestBody List<Mission> missions) {
-        missionService.addMockMissions(missions);
+
+    // define similar endpoints in a similar way : e.g go this for all the methods below
+    @GetMapping("/mission/secure-endpoint")
+    public ResponseEntity<String> secureEndpoint() {
+        // Retrieve authenticated user information
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+
+        return ResponseEntity.ok("Hello, " + username + "! This is a secure endpoint.");
     }
 
     @PostMapping("/add")

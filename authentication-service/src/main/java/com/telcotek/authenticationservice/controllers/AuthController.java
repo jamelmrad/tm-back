@@ -6,6 +6,8 @@ import com.telcotek.authenticationservice.payload.response.*;
 import com.telcotek.authenticationservice.repository.*;
 import com.telcotek.authenticationservice.security.jwt.JwtUtils;
 import com.telcotek.authenticationservice.security.services.UserDetailsImpl;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -87,23 +89,18 @@ public class AuthController {
         Set<Role> roles = new HashSet<>();
 
         if (strRoles == null) {
-            Role userRole = roleRepository.findByName(ERole.ROLE_USER);
+            Role userRole = roleRepository.findByName(ERole.ROLE_CLIENT);
             roles.add(userRole);
         } else {
             strRoles.forEach(role -> {
                 switch (role) {
-                    case "admin":
-                        Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN);
-                        roles.add(adminRole);
-
-                        break;
                     case "mod":
                         Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR);
                         roles.add(modRole);
 
                         break;
                     default:
-                        Role userRole = roleRepository.findByName(ERole.ROLE_USER);
+                        Role userRole = roleRepository.findByName(ERole.ROLE_CLIENT);
                         roles.add(userRole);
                 }
             });

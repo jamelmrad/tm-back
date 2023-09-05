@@ -6,10 +6,14 @@ import com.telcotek.missionservice.model.Mission;
 import com.telcotek.missionservice.model.Status;
 import com.telcotek.missionservice.model.Task;
 import com.telcotek.missionservice.repository.MissionRepository;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -20,6 +24,8 @@ import java.util.Map;
 @Service
 public class MissionService {
 
+    @Autowired
+    RestTemplate restTemplate;
     @Autowired
     MissionRepository missionRepository;
     @Autowired
@@ -39,9 +45,9 @@ public class MissionService {
     }
 
     /** CREATE FUNCTIONS */
-    public Mission createMission(@NotNull MissionRequest missionRequest) {
+    public Mission createMission(MissionRequest missionRequest) {
 
-        List<Task> tasks = new ArrayList<>();
+        String chatServiceUrl= "http://localhost:8080/new-chat";
 
         Mission mission = Mission.builder()
                 .title(missionRequest.getTitle())
@@ -52,11 +58,19 @@ public class MissionService {
         mission.setApproved(Boolean.FALSE);
         mission.setStartTime(missionRequest.getStartTime());
         mission.setEndedTime(missionRequest.getEndedTime());
-        mission.setTasks(tasks);
+        mission.setTasks(new ArrayList<>());
 
         missionRepository.save(mission);
 
         notifyMissionListUpdate();
+
+        // Build the URL with request parameters
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(chatServiceUrl)
+                        .queryParam("mission_id", mission.getId())
+                                .queryParam("mission_title", mission.getTitle());
+
+        // Make the POST request to the chat service
+        String chatCreationResponse = restTemplate.postForObject(builder.toUriString(), null, String.class);
 
         return mission;
     }
@@ -65,7 +79,7 @@ public class MissionService {
         missionRepository.saveAll(missions);
     }
 
-     public Mission assignTasksToMission(Long missionId, @NotNull List<Task> tasks) {
+     public Mission assignTasksToMission(Long missionId, List<Task> tasks) {
          Mission mission = missionRepository.findById(missionId).orElseThrow(() -> new IllegalArgumentException(MISSION_NOT_FOUND_MSG));
 
          for (Task t:tasks) {
@@ -182,7 +196,7 @@ public class MissionService {
         return missionRepository.findAll();
     }
 
-    public List<Mission> retrieveAllMissionsByStatus(@NotNull Status status) {
+    public List<Mission> retrieveAllMissionsByStatus(Status status) {
         switch (status) {
             case TODO -> {return missionRepository.findByStatus(Status.TODO);}
             case DOING -> {return missionRepository.findByStatus(Status.DOING);}

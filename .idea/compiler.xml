@@ -12,8 +12,10 @@
         <module name="mission-service" />
         <module name="api-gateway" />
         <module name="upload-service" />
+        <module name="chat-service" />
         <module name="user-service" />
         <module name="identity-service" />
+        <module name="notification-service" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -26,9 +28,11 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="api-gateway" options="-parameters" />
       <module name="authentication-service" options="-parameters" />
+      <module name="chat-service" options="-parameters" />
       <module name="discovery-server" options="-parameters" />
       <module name="identity-service" options="-parameters" />
       <module name="mission-service" options="-parameters" />
+      <module name="notification-service" options="-parameters" />
       <module name="spring-boot-login-example" options="-parameters" />
       <module name="ua-service" options="-parameters" />
       <module name="upload-service" options="-parameters" />
