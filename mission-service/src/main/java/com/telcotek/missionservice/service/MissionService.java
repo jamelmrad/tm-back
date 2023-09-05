@@ -47,7 +47,7 @@ public class MissionService {
     /** CREATE FUNCTIONS */
     public Mission createMission(MissionRequest missionRequest) {
 
-        String chatServiceUrl= "http://localhost:8080/new-chat";
+        String chatServiceUrl= "http://localhost:8080/api/chat/new-chat";
 
         Mission mission = Mission.builder()
                 .title(missionRequest.getTitle())
