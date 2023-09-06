@@ -25,7 +25,7 @@ public class ChatService {
         chatRepository.save(chat);
     }
 
-    public void delete (UUID chatId) {
+    public void delete (String chatId) {
         chatRepository.deleteById(chatId);
     }
 }

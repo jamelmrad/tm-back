@@ -3,7 +3,6 @@ package com.telcotek.missionservice.service;
 import com.telcotek.missionservice.model.Status;
 import com.telcotek.missionservice.model.Task;
 import com.telcotek.missionservice.repository.TaskRepository;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +18,7 @@ public class TaskService {
         return taskRepository.findAllByMissionId(missionId);
     }
 
-    public void initializeTask(@NotNull Task t) {
+    public void initializeTask(Task t) {
         LocalDateTime time = LocalDateTime.now();
         t.setProgress(0.0);
         t.setStartTime(time);
