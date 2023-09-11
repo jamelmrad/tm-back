@@ -19,6 +19,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.HashSet;
 import java.util.List;
@@ -48,6 +50,9 @@ public class AuthController {
     @Autowired
     JwtUtils jwtUtils;
 
+    @Autowired
+    RestTemplate restTemplate;
+
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
@@ -72,9 +77,6 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
-        if (userRepository.existsByEmail(signUpRequest.getEmail())) {
-            return ResponseEntity.badRequest().body(new MessageResponse("Error: Username is already taken!"));
-        }
 
         if (userRepository.existsByEmail(signUpRequest.getEmail())) {
             return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already in use!"));
@@ -118,4 +120,26 @@ public class AuthController {
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString())
                 .body(new MessageResponse("You've been signed out!"));
     }
+
+    @GetMapping()
+    @ResponseBody
+    public Object get() {
+        String userServiceUrl = "http://localhost:8084/api/users";
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null) {
+
+            // authentication.getName(); // This gets the email of the authenticated user
+
+            // Build the URL with request parameters
+            UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(userServiceUrl)
+                    .queryParam("email", authentication.getName());
+
+            // Make the GET request to the user service
+            return restTemplate.getForObject(builder.toUriString(), Object.class);
+
+        }
+        return null;
+    }
 }
+

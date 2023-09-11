@@ -1,17 +1,35 @@
 package com.telcotek.chatservice.controller;
 
-import com.telcotek.chatservice.models.Message;
+import com.telcotek.chatservice.models.*;
+import com.telcotek.chatservice.service.ChatService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
 @Controller
 public class ChatWebsocketController {
 
-    @MessageMapping("/chat.sendMessage")
-    @SendTo("/topic/public")
-    public Message sendMessage(@Payload Message message) {
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
+
+    @Autowired
+    ChatService chatService;
+
+    @MessageMapping("/chat/{chatId}")
+    @SendTo("/topic/chat/{chatId}")
+    public Message sendMessage(
+            @DestinationVariable String chatId,
+            @Payload Message message
+    ) {
+        chatService.send(chatId,message);
+
+        // Broadcast the message content
+        messagingTemplate.convertAndSend("/topic/chat/" + chatId, message);
+
         return  message;
     }
 

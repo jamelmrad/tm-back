@@ -38,6 +38,10 @@ public class UserService {
         return userRepository.findById(userId).get();
     }
 
+    public User retrieveUserByEmail(String email) {
+        return userRepository.findByEmail(email).get();
+    }
+
     public void setTeamMembersUnavailable(List<? extends User> users) {
         for (User user:users) {
             User x = userRepository.getReferenceById(user.getUserId());

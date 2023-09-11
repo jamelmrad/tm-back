@@ -70,13 +70,9 @@ public class MissionService {
                                 .queryParam("mission_title", mission.getTitle());
 
         // Make the POST request to the chat service
-        String chatCreationResponse = restTemplate.postForObject(builder.toUriString(), null, String.class);
+        restTemplate.postForObject(builder.toUriString(), null, String.class);
 
         return mission;
-    }
-
-    public void addMockMissions(List<Mission> missions) {
-        missionRepository.saveAll(missions);
     }
 
      public Mission assignTasksToMission(Long missionId, List<Task> tasks) {
