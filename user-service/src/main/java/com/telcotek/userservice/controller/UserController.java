@@ -48,7 +48,7 @@ public class UserController {
 
     @GetMapping()
     @ResponseBody
-    public User getUserByEmail(@RequestParam("email") String email) {
+    public String getUserByEmail(@RequestParam("email") String email) {
         return userService.retrieveUserByEmail(email);
     }
 }

@@ -15,7 +15,7 @@ public class Message {
     @Id
     private String id;
     private String content;
-    private Long sender_fullname; // get it from auth service
+    private String sender_fullName; // get it from auth service : done
     private String team_name; // get it from user-service
     private LocalDateTime sent_time;
 

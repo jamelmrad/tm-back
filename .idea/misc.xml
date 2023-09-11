@@ -11,6 +11,7 @@
     <option name="ignoredFiles">
       <set>
         <option value="$PROJECT_DIR$/identity-service/pom.xml" />
+        <option value="$PROJECT_DIR$/mailing-service/pom.xml" />
         <option value="$PROJECT_DIR$/ua-service/pom.xml" />
       </set>
     </option>

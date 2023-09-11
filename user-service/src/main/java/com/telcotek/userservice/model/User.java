@@ -26,5 +26,5 @@ public class User {
     private String password;
     private Long phoneNumber;
     private Boolean available;
-
+    private Boolean connected;
 }

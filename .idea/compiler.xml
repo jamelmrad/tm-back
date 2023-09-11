@@ -20,6 +20,7 @@
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="identity-service" target="17" />
+      <module name="mailing-service" target="17" />
       <module name="spring-boot-login-example" target="17" />
       <module name="ua-service" target="17" />
     </bytecodeTargetLevel>
@@ -31,6 +32,7 @@
       <module name="chat-service" options="-parameters" />
       <module name="discovery-server" options="-parameters" />
       <module name="identity-service" options="-parameters" />
+      <module name="mailing-service" options="-parameters" />
       <module name="mission-service" options="-parameters" />
       <module name="notification-service" options="-parameters" />
       <module name="spring-boot-login-example" options="-parameters" />

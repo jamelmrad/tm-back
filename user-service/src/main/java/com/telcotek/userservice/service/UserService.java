@@ -38,8 +38,9 @@ public class UserService {
         return userRepository.findById(userId).get();
     }
 
-    public User retrieveUserByEmail(String email) {
-        return userRepository.findByEmail(email).get();
+    public String retrieveUserByEmail(String email) {
+        User user = userRepository.findByEmail(email).get();
+        return user.getFirstname() + " " + user.getLastname();
     }
 
     public void setTeamMembersUnavailable(List<? extends User> users) {

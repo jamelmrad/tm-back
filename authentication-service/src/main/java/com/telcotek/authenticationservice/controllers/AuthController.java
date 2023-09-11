@@ -123,7 +123,7 @@ public class AuthController {
 
     @GetMapping()
     @ResponseBody
-    public Object get() {
+    public String get() {
         String userServiceUrl = "http://localhost:8084/api/users";
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -136,7 +136,7 @@ public class AuthController {
                     .queryParam("email", authentication.getName());
 
             // Make the GET request to the user service
-            return restTemplate.getForObject(builder.toUriString(), Object.class);
+            return restTemplate.getForObject(builder.toUriString(), String.class);
 
         }
         return null;
