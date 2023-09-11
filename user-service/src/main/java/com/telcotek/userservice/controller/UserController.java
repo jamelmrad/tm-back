@@ -51,4 +51,10 @@ public class UserController {
     public String getUserByEmail(@RequestParam("email") String email) {
         return userService.retrieveUserByEmail(email);
     }
+
+    @GetMapping("/verify")
+    @ResponseBody
+    public Boolean verifiedEmail(@RequestParam("email") String id) {
+        return userService.emailVerified(id);
+    }
 }

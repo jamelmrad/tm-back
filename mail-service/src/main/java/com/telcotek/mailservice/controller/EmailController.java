@@ -14,12 +14,12 @@ public class EmailController {
     private EmailService emailService;
 
     @PostMapping("/send-email")
-    public void sendEmail(
+    public void sendEmailVerification(
             @RequestParam("destination") String email,
             @RequestParam("subject") String subject
     ) {
         String text = "This is the email body.";
 
-        emailService.sendEmail(email, subject, text);
+        emailService.sendEmailVerification(email, subject, text);
     }
 }

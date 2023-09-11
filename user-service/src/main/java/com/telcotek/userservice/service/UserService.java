@@ -77,4 +77,9 @@ public class UserService {
         notifyUserListUpdate();
     }
 
+    public Boolean emailVerified(String email) {
+        User user = userRepository.findByEmail(email).get();
+        return user.getEmailVerified();
+    }
+
 }
