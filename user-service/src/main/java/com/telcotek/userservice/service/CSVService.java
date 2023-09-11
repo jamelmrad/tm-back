@@ -29,7 +29,7 @@ public class CSVService {
                         .firstname(csvRecord[1])
                         .lastname(csvRecord[2])
                         .phoneNumber(Long.parseLong(csvRecord[3]))
-                        .available(Boolean.valueOf(csvRecord[4]))
+                        .available(Boolean.FALSE)
                         .build();
                 usersList.add(user);
             }

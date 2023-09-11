@@ -27,4 +27,5 @@ public class User {
     private Long phoneNumber;
     private Boolean available;
     private Boolean connected;
+    private Boolean emailVerified;
 }
