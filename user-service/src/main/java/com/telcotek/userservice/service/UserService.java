@@ -105,4 +105,11 @@ public class UserService {
         return roleRepository.findByName(name);
     }
 
+    public void setPassword(String email ,String password) {
+        User user = userRepository.findByEmail(email).get();
+        user.setPassword(password);
+        user.setEmailVerified(Boolean.TRUE);
+        userRepository.save(user);
+    }
+
 }

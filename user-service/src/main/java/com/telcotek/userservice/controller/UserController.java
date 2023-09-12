@@ -88,4 +88,9 @@ public class UserController {
     public void availableUser(@RequestParam("email") String email) {
         userService.setUserAvailable(email);
     }
+
+    @PutMapping("/setPassword")
+    public void setUserPassword(@RequestParam("email") String email, @RequestParam("password") String password) {
+        userService.setPassword(email,password);
+    }
 }
