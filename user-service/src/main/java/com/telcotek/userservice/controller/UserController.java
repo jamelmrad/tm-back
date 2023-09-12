@@ -1,5 +1,8 @@
 package com.telcotek.userservice.controller;
 
+import com.telcotek.userservice.dto.UserDto;
+import com.telcotek.userservice.model.ERole;
+import com.telcotek.userservice.model.Role;
 import com.telcotek.userservice.model.User;
 import com.telcotek.userservice.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +18,23 @@ public class UserController {
 
     @Autowired
     UserService userService;
+
+    @PostMapping("/new")
+    public void save(@RequestBody UserDto userDto) {
+        User user = User.builder()
+                        .firstname(userDto.getFirstname())
+                                .lastname(userDto.getLastname())
+                                        .email(userDto.getEmail())
+                                                .password(userDto.getPassword())
+                                                        .build();
+        userService.saveUser(user);
+    }
+
+    @GetMapping("/role")
+    @ResponseBody
+    public Role getRoleByName(@RequestParam("role") ERole role) {
+        return userService.getByName(role);
+    }
 
     @GetMapping("/users")
     public ResponseEntity<List<User>> getAllUsers() {
@@ -49,12 +69,29 @@ public class UserController {
     @GetMapping()
     @ResponseBody
     public String getUserByEmail(@RequestParam("email") String email) {
-        return userService.retrieveUserByEmail(email);
+        return userService.retrieveUserFullName(email);
     }
 
     @GetMapping("/verify")
     @ResponseBody
-    public Boolean verifiedEmail(@RequestParam("email") String id) {
-        return userService.emailVerified(id);
+    public Boolean isEmailVerified(@RequestParam("email") String email) {
+        return userService.emailVerified(email);
+    }
+
+    @GetMapping("/get")
+    @ResponseBody
+    public User get(@RequestParam("email") String email) {
+        return userService.retrieveUserByEmail(email).get();
+    }
+
+    @GetMapping("/existence")
+    @ResponseBody
+    public Boolean existence(@RequestParam String email) {
+        return userService.existsByEmail(email);
+    }
+
+    @PutMapping("/update")
+    public void availableUser(@RequestParam("email") String email) {
+        userService.setUserAvailable(email);
     }
 }

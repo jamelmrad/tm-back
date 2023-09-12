@@ -1,4 +1,4 @@
-package com.telcotek.authenticationservice.models;
+package com.telcotek.userservice.model;
 
 import jakarta.persistence.*;
 import lombok.Data;

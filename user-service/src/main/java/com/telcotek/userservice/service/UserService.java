@@ -1,18 +1,25 @@
 package com.telcotek.userservice.service;
 
+import com.telcotek.userservice.model.ERole;
+import com.telcotek.userservice.model.Role;
 import com.telcotek.userservice.model.User;
+import com.telcotek.userservice.repository.RoleRepository;
 import com.telcotek.userservice.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    RoleRepository roleRepository;
 
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
@@ -24,6 +31,10 @@ public class UserService {
 
     public void notifyUserDetailsUpdate(Long userId) {
         messagingTemplate.convertAndSend("/task-management/users/" + userId , retrieveUserById(userId));
+    }
+
+    public void saveUser(User user) {
+        userRepository.save(user);
     }
 
     public List<User> getAllUsers() {
@@ -38,17 +49,21 @@ public class UserService {
         return userRepository.findById(userId).get();
     }
 
-    public String retrieveUserByEmail(String email) {
+    public Optional<User> retrieveUserByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
+    public String retrieveUserFullName(String email) {
         User user = userRepository.findByEmail(email).get();
         return user.getFirstname() + " " + user.getLastname();
     }
 
     public void setTeamMembersUnavailable(List<? extends User> users) {
         for (User user:users) {
-            User x = userRepository.getReferenceById(user.getUserId());
+            User x = userRepository.getReferenceById(user.getId());
             x.setAvailable(Boolean.FALSE);
             userRepository.save(x);
-            notifyUserDetailsUpdate(x.getUserId());
+            notifyUserDetailsUpdate(x.getId());
             notifyUserListUpdate();
         }
     }
@@ -57,7 +72,7 @@ public class UserService {
         for (User user:users) {
             user.setAvailable(Boolean.TRUE);
             userRepository.save(user);
-            notifyUserDetailsUpdate(user.getUserId());
+            notifyUserDetailsUpdate(user.getId());
             notifyUserListUpdate();
         }
     }
@@ -69,17 +84,25 @@ public class UserService {
         notifyUserListUpdate();
     }
 
-    public void setUserAvailable(Long userId) {
-        User user = retrieveUserById(userId);
+    public void setUserAvailable(String userEmail) {
+        User user = userRepository.findByEmail(userEmail).get();
         user.setAvailable(Boolean.TRUE);
         userRepository.save(user);
-        notifyUserDetailsUpdate(userId);
+        notifyUserDetailsUpdate(user.getId());
         notifyUserListUpdate();
     }
 
     public Boolean emailVerified(String email) {
         User user = userRepository.findByEmail(email).get();
         return user.getEmailVerified();
+    }
+
+    public Boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
+    public Role getByName(ERole name) {
+        return roleRepository.findByName(name);
     }
 
 }

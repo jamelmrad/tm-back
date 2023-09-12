@@ -25,7 +25,7 @@ public class CSVService {
             List<User> usersList = new ArrayList<>();
             for(String[] csvRecord : records) {
                 User user = User.builder()
-                        .userId(Long.parseLong(csvRecord[0]))
+                        .Id(Long.parseLong(csvRecord[0]))
                         .firstname(csvRecord[1])
                         .lastname(csvRecord[2])
                         .phoneNumber(Long.parseLong(csvRecord[3]))

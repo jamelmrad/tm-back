@@ -1,6 +1,7 @@
-package com.telcotek.authenticationservice.repository;
+package com.telcotek.userservice.repository;
 
-import com.telcotek.authenticationservice.models.*;
+import com.telcotek.userservice.model.ERole;
+import com.telcotek.userservice.model.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

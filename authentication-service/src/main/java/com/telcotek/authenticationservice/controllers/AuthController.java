@@ -1,16 +1,20 @@
 package com.telcotek.authenticationservice.controllers;
 
-import com.telcotek.authenticationservice.models.*;
 import com.telcotek.authenticationservice.payload.request.*;
 import com.telcotek.authenticationservice.payload.response.*;
-import com.telcotek.authenticationservice.repository.*;
 import com.telcotek.authenticationservice.security.jwt.JwtUtils;
 import com.telcotek.authenticationservice.security.services.UserDetailsImpl;
+import com.telcotek.userservice.model.ERole;
+import com.telcotek.userservice.model.Role;
+import com.telcotek.userservice.model.User;
+import com.telcotek.userservice.repository.RoleRepository;
+import com.telcotek.userservice.repository.UserRepository;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,6 +28,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -36,13 +41,6 @@ public class AuthController {
 
     @Autowired
     AuthenticationManager authenticationManager;
-
-    // All repository calls should be made thought user-service interaction
-    @Autowired
-    UserRepository userRepository;
-
-    @Autowired
-    RoleRepository roleRepository;
 
     @Autowired
     PasswordEncoder encoder;
@@ -78,12 +76,27 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
 
-        if (userRepository.existsByEmail(signUpRequest.getEmail())) {
+        // Call user-service to verify user existence
+        String userExistenceUrl = "http://localhost:8084/api/users/existence";
+
+        // Build the URL with request parameters
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(userExistenceUrl)
+                .queryParam("email",signUpRequest.getEmail());
+
+        Boolean exist = restTemplate.exchange(
+                builder.toUriString(),
+                HttpMethod.GET, null,
+                Boolean.class
+        ).getBody();
+
+        if (exist) {
             return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already in use!"));
         }
 
         // Create new user's account
         User user = new User(
+                signUpRequest.getFirstname(),
+                signUpRequest.getLastname(),
                 signUpRequest.getEmail(),
                 encoder.encode(signUpRequest.getPassword()));
 
@@ -91,25 +104,58 @@ public class AuthController {
         Set<Role> roles = new HashSet<>();
 
         if (strRoles == null) {
-            Role userRole = roleRepository.findByName(ERole.ROLE_CLIENT);
+            // Call user-service to verify user existence
+            String userServiceUrl = "http://localhost:8084/api/users/existence";
+
+            // Build the URL with request parameters
+            UriComponentsBuilder secondBuilder = UriComponentsBuilder.fromHttpUrl(userServiceUrl)
+                    .queryParam("role",ERole.ROLE_CLIENT);
+
+            Role userRole = restTemplate.exchange(
+                    secondBuilder.toUriString(),
+                    HttpMethod.GET, null,
+                    Role.class).getBody();
             roles.add(userRole);
         } else {
             strRoles.forEach(role -> {
                 switch (role) {
                     case "mod":
-                        Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR);
+                        // Call user-service to verify user existence
+                        String userServiceUrl = "http://localhost:8084/api/users/role";
+
+                        // Build the URL with request parameters
+                        UriComponentsBuilder secondBuilder = UriComponentsBuilder.fromHttpUrl(userServiceUrl)
+                                .queryParam("role",ERole.ROLE_MODERATOR);
+
+                        Role modRole = restTemplate.exchange(
+                                secondBuilder.toUriString(),
+                                HttpMethod.GET, null,
+                                Role.class).getBody();
                         roles.add(modRole);
 
                         break;
                     default:
-                        Role userRole = roleRepository.findByName(ERole.ROLE_CLIENT);
+                        // Call user-service to verify user existence
+                        String serServiceUrl = "http://localhost:8084/api/users/role";
+
+                        // Build the URL with request parameters
+                        UriComponentsBuilder thirdBuilder = UriComponentsBuilder.fromHttpUrl(serServiceUrl)
+                                .queryParam("role",ERole.ROLE_CLIENT);
+
+                        Role userRole = restTemplate.exchange(
+                                thirdBuilder.toUriString(),
+                                HttpMethod.GET, null,
+                                Role.class).getBody();
                         roles.add(userRole);
                 }
             });
         }
 
         user.setRoles(roles);
-        userRepository.save(user);
+        // Call user-service to save user
+        String userSaveUrl = "http://localhost:8084/api/users/new";
+
+        restTemplate.postForEntity(userSaveUrl,user,User.class);
 
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
     }
