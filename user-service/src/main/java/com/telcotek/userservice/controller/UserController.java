@@ -20,14 +20,8 @@ public class UserController {
     UserService userService;
 
     @PostMapping("/new")
-    public void save(@RequestBody UserDto userDto) {
-        User user = User.builder()
-                        .firstname(userDto.getFirstname())
-                                .lastname(userDto.getLastname())
-                                        .email(userDto.getEmail())
-                                                .password(userDto.getPassword())
-                                                        .build();
-        userService.saveUser(user);
+    public void save(@RequestBody User user) {
+            userService.saveUser(user);
     }
 
     @GetMapping("/role")

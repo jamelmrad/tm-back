@@ -13,23 +13,19 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseCookie;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 //for Angular Client (withCredentials)
@@ -74,7 +70,7 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
+    public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) throws InterruptedException {
 
         // Call user-service to verify user existence
         String userExistenceUrl = "http://localhost:8084/api/users/existence";
@@ -94,12 +90,15 @@ public class AuthController {
         }
 
         // Create new user's account
+
         User user = new User(
                 signUpRequest.getFirstname(),
                 signUpRequest.getLastname(),
                 signUpRequest.getEmail(),
                 encoder.encode(signUpRequest.getPassword()));
-
+        if (signUpRequest.getPassword() == "" || signUpRequest.getPassword() == null) {
+            user.setPassword("changeme");
+        }
         Set<String> strRoles = signUpRequest.getRole();
         Set<Role> roles = new HashSet<>();
 
@@ -156,6 +155,24 @@ public class AuthController {
         String userSaveUrl = "http://localhost:8084/api/users/new";
 
         restTemplate.postForEntity(userSaveUrl,user,User.class);
+
+        Thread.sleep(5000);
+
+        // Define the request parameters
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        // Create a request body with the parameters
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("destination", user.getEmail());
+        params.add("subject", "Account Verification");
+        params.add("random-link-identifier", UUID.randomUUID().toString());
+
+        // Create an HttpEntity with the request body and headers
+        HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(params, headers);
+
+        // Perform the POST request using RestTemplate
+        ResponseEntity<String> responseEntity = restTemplate.postForEntity("http://localhost:8085/send-email", requestEntity, String.class);
 
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
     }

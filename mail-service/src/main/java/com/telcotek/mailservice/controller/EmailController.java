@@ -16,10 +16,11 @@ public class EmailController {
     @PostMapping("/send-email")
     public void sendEmailVerification(
             @RequestParam("destination") String email,
-            @RequestParam("subject") String subject
+            @RequestParam("subject") String subject,
+            @RequestParam("random-link-identifier") String linkIdentifier
     ) {
         String text = "This is the email body.";
 
-        emailService.sendEmailVerification(email, subject, text);
+        emailService.sendEmailVerification(email, subject, text,linkIdentifier);
     }
 }
