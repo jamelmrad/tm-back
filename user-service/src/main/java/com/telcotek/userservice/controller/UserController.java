@@ -93,4 +93,14 @@ public class UserController {
     public void setUserPassword(@RequestParam("email") String email, @RequestParam("password") String password) {
         userService.setPassword(email,password);
     }
+
+    @PutMapping("/setOnline")
+    public void setUserOnline(@RequestParam("email") String email) {
+        userService.setOnline(email);
+    }
+
+    @PutMapping("/setOffline")
+    public void setUserOffline(@RequestParam("email") String email) {
+        userService.setOffline(email);
+    }
 }

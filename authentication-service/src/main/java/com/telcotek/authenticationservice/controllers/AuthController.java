@@ -63,6 +63,23 @@ public class AuthController {
                 .map(item -> item.getAuthority())
                 .collect(Collectors.toList());
 
+        // Define the URL of the endpoint you want to send the PUT request to
+        String url = "http://localhost:8084/api/users/setOnline";
+
+        // Define the request parameters
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        // Create a request body with the parameters
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("email", loginRequest.getEmail());
+
+        // Create an HttpEntity with the request body and headers
+        HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(params, headers);
+
+        // Perform the PUT request using RestTemplate
+        restTemplate.put(url, requestEntity);
+
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
                 .body(new UserInfoResponse(userDetails.getId(),
                         userDetails.getEmail(),
@@ -180,6 +197,26 @@ public class AuthController {
     @PostMapping("/signout")
     public ResponseEntity<?> logoutUser() {
         ResponseCookie cookie = jwtUtils.getCleanJwtCookie();
+
+        String url = "http://localhost:8084/api/users/setOffline";
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null) {
+
+            // Define the request parameters
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+            // Create a request body with the parameters
+            MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+            params.add("email", authentication.getName());
+
+            // Create an HttpEntity with the request body and headers
+            HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(params, headers);
+
+            // Perform the PUT request using RestTemplate
+            restTemplate.put(url, requestEntity);
+        }
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString())
                 .body(new MessageResponse("You've been signed out!"));
     }
@@ -199,7 +236,8 @@ public class AuthController {
                     .queryParam("email", authentication.getName());
 
             // Make the GET request to the user service
-            return restTemplate.getForObject(builder.toUriString(), String.class);
+            //return restTemplate.getForObject(builder.toUriString(), String.class);
+            return authentication.getName();
 
         }
         return null;

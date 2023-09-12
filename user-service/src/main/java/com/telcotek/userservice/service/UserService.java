@@ -105,11 +105,26 @@ public class UserService {
         return roleRepository.findByName(name);
     }
 
+    public void setOnline(String email) {
+        User user = userRepository.findByEmail(email).get();
+        user.setConnected(Boolean.TRUE);
+        userRepository.save(user);
+        notifyUserDetailsUpdate(user.getId());
+    }
+
+    public void setOffline(String email) {
+        User user = userRepository.findByEmail(email).get();
+        user.setConnected(Boolean.FALSE);
+        userRepository.save(user);
+        notifyUserDetailsUpdate(user.getId());
+    }
+
     public void setPassword(String email ,String password) {
         User user = userRepository.findByEmail(email).get();
         user.setPassword(password);
         user.setEmailVerified(Boolean.TRUE);
         userRepository.save(user);
+        notifyUserDetailsUpdate(user.getId());
     }
 
 }
