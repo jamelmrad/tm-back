@@ -123,6 +123,7 @@ public class UserService {
         User user = userRepository.findByEmail(email).get();
         user.setPassword(password);
         user.setEmailVerified(Boolean.TRUE);
+        user.setAvailable(Boolean.TRUE);
         userRepository.save(user);
         notifyUserDetailsUpdate(user.getId());
     }
