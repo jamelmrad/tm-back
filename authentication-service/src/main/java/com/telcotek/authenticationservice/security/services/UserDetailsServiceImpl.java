@@ -1,6 +1,5 @@
 package com.telcotek.authenticationservice.security.services;
 
-import com.telcotek.userservice.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.telcotek.userservice.model.User;
 import org.springframework.http.HttpMethod;

@@ -7,10 +7,6 @@ import com.telcotek.authenticationservice.security.services.UserDetailsImpl;
 import com.telcotek.userservice.model.ERole;
 import com.telcotek.userservice.model.Role;
 import com.telcotek.userservice.model.User;
-import com.telcotek.userservice.repository.RoleRepository;
-import com.telcotek.userservice.repository.UserRepository;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
@@ -29,8 +25,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 //for Angular Client (withCredentials)
-//@CrossOrigin(origins = "http://localhost:8081", maxAge = 3600, allowCredentials="true")
-@CrossOrigin(origins = "*", maxAge = 3600)
+@CrossOrigin(origins = "http://localhost:8081", maxAge = 3600, allowCredentials="true")
+//@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {

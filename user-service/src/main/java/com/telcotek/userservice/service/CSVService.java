@@ -29,7 +29,10 @@ public class CSVService {
                         .firstname(csvRecord[1])
                         .lastname(csvRecord[2])
                         .phoneNumber(Long.parseLong(csvRecord[3]))
+                        .email(csvRecord[4])
                         .available(Boolean.FALSE)
+                        .connected(Boolean.FALSE)
+                        .emailVerified(Boolean.FALSE)
                         .build();
                 usersList.add(user);
             }

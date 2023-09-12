@@ -41,6 +41,10 @@ public class UserService {
         return userRepository.findAll();
     }
 
+    public List<User> getAllOnlineUsers() {
+        return userRepository.findAllByConnectedTrue();
+    }
+
     public List<User> retrieveAllAvailableUsers() {
         return userRepository.findAllByAvailableTrue();
     }

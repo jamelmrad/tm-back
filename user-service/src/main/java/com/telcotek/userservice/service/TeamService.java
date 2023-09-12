@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.Collections;
@@ -38,6 +39,9 @@ public class TeamService {
     UserService userService;
 
     @Autowired
+    RestTemplate restTemplate;
+
+    @Autowired
     private SimpMessagingTemplate messagingTemplate;
 
 
@@ -58,13 +62,21 @@ public class TeamService {
     public Team createTeam(TeamDto teamDto) {
         Integer members = teamDto.getAdmins().size() + teamDto.getOfficers().size() +1;
 
+        // Define the URL of the endpoint you want to send the GET request to
+        String url = "http://localhost:8080/api/auth";
+
+        // Perform the GET request using RestTemplate and receive the response as a String
+        String response = restTemplate.getForObject(url, String.class);
+
+        User user = userRepository.findByEmail(response).get();
+
         Team team = Team.builder()
                 .name(teamDto.getName())
                 .numberOfTeamMembers(members)
                 .missionId(teamDto.getMissionId())
                 .officers(teamDto.getOfficers())
                 .admins(teamDto.getAdmins())
-                .superAdmin(teamDto.getSuperAdmin())
+                .superAdmin((SuperAdmin) user)
                 .build();
 
 
