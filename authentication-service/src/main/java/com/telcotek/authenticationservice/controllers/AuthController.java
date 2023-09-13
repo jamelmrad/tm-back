@@ -83,7 +83,7 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) throws InterruptedException {
+    public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
 
         // Call user-service to verify user existence
         String userExistenceUrl = "http://localhost:8084/api/users/existence";
@@ -169,8 +169,6 @@ public class AuthController {
 
         restTemplate.postForEntity(userSaveUrl,user,User.class);
 
-        Thread.sleep(5000);
-
         // Define the request parameters
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -185,7 +183,7 @@ public class AuthController {
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(params, headers);
 
         // Perform the POST request using RestTemplate
-        ResponseEntity<String> responseEntity = restTemplate.postForEntity("http://localhost:8085/send-email", requestEntity, String.class);
+        ResponseEntity<String> responseEntity = restTemplate.postForEntity("http://localhost:8086/send-email", requestEntity, String.class);
 
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
     }

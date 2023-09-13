@@ -1,9 +1,6 @@
 package com.telcotek.userservice.controller;
 
-import com.telcotek.userservice.dto.UserDto;
-import com.telcotek.userservice.model.ERole;
-import com.telcotek.userservice.model.Role;
-import com.telcotek.userservice.model.User;
+import com.telcotek.userservice.model.*;
 import com.telcotek.userservice.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:8081", allowCredentials = "true")
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -30,7 +28,7 @@ public class UserController {
         return userService.getByName(role);
     }
 
-    @GetMapping("/users")
+    @GetMapping("/all")
     public ResponseEntity<List<User>> getAllUsers() {
         try {
             List<User> users = userService.getAllUsers();
@@ -64,6 +62,12 @@ public class UserController {
     @ResponseBody
     public String getUserByEmail(@RequestParam("email") String email) {
         return userService.retrieveUserFullName(email);
+    }
+
+    @GetMapping("/get/{id}")
+    @ResponseBody
+    public User getUserById(@PathVariable("id") Long id) {
+        return userService.retrieveUserById(id);
     }
 
     @GetMapping("/verify")

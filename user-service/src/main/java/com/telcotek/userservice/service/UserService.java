@@ -35,6 +35,7 @@ public class UserService {
 
     public void saveUser(User user) {
         userRepository.save(user);
+        notifyUserListUpdate();
     }
 
     public List<User> getAllUsers() {
@@ -114,6 +115,7 @@ public class UserService {
         user.setConnected(Boolean.TRUE);
         userRepository.save(user);
         notifyUserDetailsUpdate(user.getId());
+        notifyUserListUpdate();
     }
 
     public void setOffline(String email) {
@@ -121,6 +123,7 @@ public class UserService {
         user.setConnected(Boolean.FALSE);
         userRepository.save(user);
         notifyUserDetailsUpdate(user.getId());
+        notifyUserListUpdate();
     }
 
     public void setPassword(String email ,String password) {

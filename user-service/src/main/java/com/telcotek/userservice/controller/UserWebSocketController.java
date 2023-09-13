@@ -17,7 +17,7 @@ public class UserWebSocketController {
     UserService userService;
 
     @MessageMapping("/users")
-    @SendTo("/task-management/missions")
+    @SendTo("/task-management/users")
     public List<User> getUserListUpdate() {
         return userService.getAllUsers();
     }

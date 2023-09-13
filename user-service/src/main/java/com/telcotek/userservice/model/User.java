@@ -1,5 +1,6 @@
 package com.telcotek.userservice.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,6 +29,7 @@ public class User {
     private String firstname;
     private String lastname;
     private String email;
+   // @JsonIgnore
     private String password;
     private Long phoneNumber;
     private Boolean available;

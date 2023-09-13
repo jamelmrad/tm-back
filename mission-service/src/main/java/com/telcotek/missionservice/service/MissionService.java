@@ -26,12 +26,16 @@ public class MissionService {
 
     @Autowired
     RestTemplate restTemplate;
+
     @Autowired
     MissionRepository missionRepository;
+
     @Autowired
     TaskService taskService;
     @Autowired
+
     private SimpMessagingTemplate messagingTemplate;
+
     private final static String MISSION_NOT_FOUND_MSG = "Mission not found";
 
 
