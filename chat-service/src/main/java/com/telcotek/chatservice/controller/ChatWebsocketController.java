@@ -19,8 +19,8 @@ public class ChatWebsocketController {
     @Autowired
     ChatService chatService;
 
-    @MessageMapping("/chat/{chatId}")
-    @SendTo("/topic/chat/{chatId}")
+    @MessageMapping("/chats/{chatId}")
+    @SendTo("/task-management/chats/{chatId}")
     public Message sendMessage(
             @DestinationVariable String chatId,
             @Payload Message message
@@ -28,7 +28,7 @@ public class ChatWebsocketController {
         chatService.send(chatId,message);
 
         // Broadcast the message content
-        messagingTemplate.convertAndSend("/topic/chat/" + chatId, message);
+        messagingTemplate.convertAndSend("/task-management/chats/" + chatId, message);
 
         return  message;
     }
