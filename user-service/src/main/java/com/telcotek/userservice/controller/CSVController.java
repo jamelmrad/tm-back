@@ -3,6 +3,7 @@ package com.telcotek.userservice.controller;
 import com.telcotek.userservice.helper.CSVHelper;
 import com.telcotek.userservice.message.ResponseMessage;
 import com.telcotek.userservice.service.CSVService;
+import com.telcotek.userservice.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,13 +12,15 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 //@CrossOrigin("http://localhost:8080")
-@CrossOrigin
-@Controller
+@CrossOrigin(origins = "http://localhost:8081", allowCredentials = "true")@Controller
 @RequestMapping("/api/csv")
 public class CSVController {
 
     @Autowired
     CSVService fileService;
+
+    @Autowired
+    UserService userService;
 
     @PostMapping("/upload")
     public ResponseEntity<ResponseMessage> upload(@RequestParam("file") MultipartFile file) {
@@ -25,6 +28,7 @@ public class CSVController {
 
         if (CSVHelper.hasCSVFormat(file)) {
                 fileService.save(file);
+                userService.notifyUserListUpdate();
 
                 message = "Uploaded the file successfully: " + file.getOriginalFilename();
                 return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(message));

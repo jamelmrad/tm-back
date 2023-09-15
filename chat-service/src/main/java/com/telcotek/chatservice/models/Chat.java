@@ -14,7 +14,7 @@ import java.util.List;
 public class Chat {
     @Id
     private String id;
-    private Long mission_id;
+    private Long missionId;
     private String mission_title;
     private Integer online_members;
 

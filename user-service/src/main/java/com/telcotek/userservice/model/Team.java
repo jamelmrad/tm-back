@@ -22,13 +22,13 @@ public class Team {
     private Long missionId;
     private Integer numberOfTeamMembers;
 
-    @OneToMany(mappedBy = "team")
+    @OneToMany(mappedBy = "officerTeam")
     List<Officer> officers;
 
     @OneToOne(mappedBy = "team",cascade = CascadeType.MERGE)
     SuperAdmin superAdmin;
 
-    @OneToMany(mappedBy = "team")
+    @OneToMany(mappedBy = "adminTeam")
     List<Admin> admins;
 
     public SuperAdmin getSuperAdmin() {

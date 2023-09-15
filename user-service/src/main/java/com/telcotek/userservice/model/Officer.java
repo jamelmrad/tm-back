@@ -14,5 +14,5 @@ public class Officer extends User{
     @ManyToOne
     @JoinColumn(name = "team_id")
             @JsonIgnore
-    Team team;
+    Team officerTeam;
 }

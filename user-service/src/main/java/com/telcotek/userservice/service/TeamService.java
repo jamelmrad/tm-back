@@ -81,11 +81,11 @@ public class TeamService {
 
 
         for (Officer officer:team.getOfficers()) {
-            officer.setTeam(team);
+            officer.setOfficerTeam(team);
             officer.setAvailable(Boolean.FALSE);
         }
         for (Admin admin:team.getAdmins()) {
-            admin.setTeam(team);
+            admin.setAdminTeam(team);
             admin.setAvailable(Boolean.FALSE);
         }
         teamRepository.save(team);

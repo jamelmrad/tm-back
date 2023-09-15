@@ -31,7 +31,7 @@ public class ChatService {
 
     public void create(Long mission_id, String mission_title) {
         Chat chat = Chat.builder()
-                .mission_id(mission_id)
+                .missionId(mission_id)
                 .mission_title(mission_title)
                 .online_members(0)
                 .messages(new ArrayList<>())
@@ -107,7 +107,7 @@ public class ChatService {
         /** Retrieve chats */
         List<Chat> chats = new ArrayList<>();
         for (Long id:response.getBody()) {
-            chats.add(chatRepository.findByMission_id(id).get());
+            chats.add(chatRepository.findByMissionId(id).get());
         }
         return chats;
     }

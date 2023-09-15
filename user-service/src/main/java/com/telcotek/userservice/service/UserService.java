@@ -151,13 +151,13 @@ public class UserService {
         List<Team> teams = new ArrayList<>();
 
         for (Admin admin:admins) {
-            teams.add(admin.getTeam());
+            teams.add(admin.getAdminTeam());
         }
         for (SuperAdmin superAdmin:superAdmins) {
             teams.add(superAdmin.getTeam());
         }
         for (Officer officer:officers) {
-            teams.add(officer.getTeam());
+            teams.add(officer.getOfficerTeam());
         }
 
         return teams;
