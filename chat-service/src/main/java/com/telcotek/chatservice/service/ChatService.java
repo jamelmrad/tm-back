@@ -3,7 +3,11 @@ package com.telcotek.chatservice.service;
 import com.telcotek.chatservice.models.*;
 import com.telcotek.chatservice.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
@@ -75,4 +79,37 @@ public class ChatService {
     public void delete (String chatId) {
         chatRepository.deleteById(chatId);
     }
+
+    public List<Chat> retrieveAllFromMissionIds(String email) {
+
+        /** Get mission Ids from user-service */
+        String apiUrl = "http://localhost:8084/api/users/missions-ids";
+
+        // Define the request parameters
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        // Create a request body with the parameters
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("email", email);
+
+        // Create an HttpEntity with the request body and headers
+        HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(params, headers);
+
+        // Perform the GET request using RestTemplate
+        ResponseEntity<List<Long>> response = restTemplate.exchange(
+                apiUrl,
+                HttpMethod.GET,
+                requestEntity,
+                new ParameterizedTypeReference<List<Long>>() {}
+        );
+
+        /** Retrieve chats */
+        List<Chat> chats = new ArrayList<>();
+        for (Long id:response.getBody()) {
+            chats.add(chatRepository.findByMission_id(id).get());
+        }
+        return chats;
+    }
+
 }

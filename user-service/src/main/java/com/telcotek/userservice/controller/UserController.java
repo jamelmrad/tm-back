@@ -88,6 +88,12 @@ public class UserController {
         return userService.existsByEmail(email);
     }
 
+    @GetMapping("/missions-ids")
+    @ResponseBody
+    public List<Long> getMissionIds(@RequestParam("email") String email) {
+        return userService.retrieveMissionsIdsFromUserId(email);
+    }
+
     @PutMapping("/update")
     public void availableUser(@RequestParam("email") String email) {
         userService.setUserAvailable(email);

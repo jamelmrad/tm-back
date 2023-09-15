@@ -1,14 +1,12 @@
 package com.telcotek.userservice.service;
 
-import com.telcotek.userservice.model.ERole;
-import com.telcotek.userservice.model.Role;
-import com.telcotek.userservice.model.User;
-import com.telcotek.userservice.repository.RoleRepository;
-import com.telcotek.userservice.repository.UserRepository;
+import com.telcotek.userservice.model.*;
+import com.telcotek.userservice.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,6 +15,15 @@ public class UserService {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    OfficerRepository officerRepository;
+
+    @Autowired
+    AdminRepository adminRepository;
+
+    @Autowired
+    SuperAdminRepository superAdminRepository;
 
     @Autowired
     RoleRepository roleRepository;
@@ -132,7 +139,38 @@ public class UserService {
         user.setEmailVerified(Boolean.TRUE);
         user.setAvailable(Boolean.TRUE);
         userRepository.save(user);
+        notifyUserListUpdate();
         notifyUserDetailsUpdate(user.getId());
     }
+
+    public List<Team> retrieveTeamsFromUserId(Long userId) {
+        List<Admin> admins = adminRepository.findAllById(userId);
+        List<SuperAdmin> superAdmins = superAdminRepository.findAllById(userId);
+        List<Officer> officers = officerRepository.findAllById(userId);
+
+        List<Team> teams = new ArrayList<>();
+
+        for (Admin admin:admins) {
+            teams.add(admin.getTeam());
+        }
+        for (SuperAdmin superAdmin:superAdmins) {
+            teams.add(superAdmin.getTeam());
+        }
+        for (Officer officer:officers) {
+            teams.add(officer.getTeam());
+        }
+
+        return teams;
+    }
+
+    public List<Long> retrieveMissionsIdsFromUserId(String email) {
+        Long userId = userRepository.findByEmail(email).get().getId();
+        List<Team> teams = retrieveTeamsFromUserId(userId);
+        List<Long> mission_ids = new ArrayList<>();
+        for (Team team:teams) {
+            mission_ids.add(team.getMissionId());
+        }
+        return mission_ids;
+    } // this will help in mission service + chat service ====> check implementation
 
 }

@@ -7,11 +7,12 @@ import com.telcotek.missionservice.model.Status;
 import com.telcotek.missionservice.model.Task;
 import com.telcotek.missionservice.repository.MissionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.*;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -244,6 +245,38 @@ public class MissionService {
     public List<Task> retrieveAllTasksInMission(Long missionId) {
         Mission mission = missionRepository.findById(missionId).orElseThrow(() -> new IllegalArgumentException(MISSION_NOT_FOUND_MSG));
         return mission.getTasks();
+    }
+
+    public List<Mission> retrieveAllMissionsFromIds(String email) {
+
+        /** Get mission Ids from user-service */
+        String apiUrl = "http://localhost:8084/api/users/missions-ids";
+
+        // Define the request parameters
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        // Create a request body with the parameters
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("email", email);
+
+        // Create an HttpEntity with the request body and headers
+        HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(params, headers);
+
+        // Perform the GET request using RestTemplate
+        ResponseEntity<List<Long>> response = restTemplate.exchange(
+                apiUrl,
+                HttpMethod.GET,
+                requestEntity,
+                new ParameterizedTypeReference<List<Long>>() {}
+        );
+
+        /** Retrieve missions */
+        List<Mission> missions = new ArrayList<>();
+        for (Long id:response.getBody()) {
+            missions.add(missionRepository.findById(id).get());
+        }
+        return missions;
     }
 
     /** DELETE FUNCTIONS */

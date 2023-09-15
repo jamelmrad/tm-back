@@ -101,6 +101,18 @@ public class MissionController {
         }
     }
 
+    @GetMapping("/from-ids")
+    @ResponseBody
+    public ResponseEntity<List<Mission>> getAllMissionsFromIds(@RequestParam("email") String email) {
+        try {
+            List<Mission> missions = missionService.retrieveAllMissionsFromIds(email);
+
+            return new ResponseEntity<>(missions, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @GetMapping("/all/by_status")
     @ResponseBody
     public ResponseEntity<List<Mission>> getAllMissionsByStatus(@RequestParam("status")Status status) {

@@ -13,14 +13,25 @@ public class EmailController {
     @Autowired
     private EmailService emailService;
 
-    @PostMapping("/send-email")
-    public void sendEmailVerification(
+    @PostMapping("/mod-verif")
+    public void sendEmailVerificationForModerator(
             @RequestParam("destination") String email,
             @RequestParam("subject") String subject,
             @RequestParam("random-link-identifier") String linkIdentifier
     ) {
         String text = "This is the email body.";
 
-        emailService.sendEmailVerification(email, subject, text,linkIdentifier);
+        emailService.sendEmailVerificationForModerator(email, subject, text,linkIdentifier);
+    }
+
+    @PostMapping("/send-email")
+    public void sendEmailVerificationForClient(
+            @RequestParam("destination") String email,
+            @RequestParam("subject") String subject,
+            @RequestParam("random-link-identifier") String linkIdentifier
+    ) {
+        String text = "This is the email body.";
+
+        emailService.sendEmailVerificationForClient(email, subject, text,linkIdentifier);
     }
 }

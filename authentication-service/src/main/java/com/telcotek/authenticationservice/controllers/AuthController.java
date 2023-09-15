@@ -82,6 +82,31 @@ public class AuthController {
                         roles));
     }
 
+    @PostMapping()
+    public ResponseEntity<?> initiateUser(@Valid @RequestBody LoginRequest loginRequest) {
+
+        String encodedPassword = encoder.encode(loginRequest.getPassword());
+
+        String apiUrl = "http://localhost:8084/api/users/setPassword";
+
+        // Define the request parameters
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        // Create a request body with the parameters
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("email", loginRequest.getEmail());
+        params.add("password", encodedPassword);
+
+        // Create an HttpEntity with the request body and headers
+        HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(params, headers);
+
+        // Perform the POST request using RestTemplate
+        ResponseEntity<String> responseEntity = restTemplate.exchange(apiUrl, HttpMethod.PUT, requestEntity, String.class);
+
+        return ResponseEntity.ok(new MessageResponse("Password updated successfully!"));
+    }
+
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
 
@@ -164,6 +189,7 @@ public class AuthController {
         }
 
         user.setRoles(roles);
+
         // Call user-service to save user
         String userSaveUrl = "http://localhost:8084/api/users/new";
 
@@ -182,8 +208,15 @@ public class AuthController {
         // Create an HttpEntity with the request body and headers
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(params, headers);
 
-        // Perform the POST request using RestTemplate
-        ResponseEntity<String> responseEntity = restTemplate.postForEntity("http://localhost:8086/send-email", requestEntity, String.class);
+        if (signUpRequest.getRole().contains("mod")){
+            // Perform the POST request using RestTemplate
+            ResponseEntity<String> responseEntity = restTemplate.postForEntity("http://localhost:8086/mod-verif", requestEntity, String.class);
+        }else{
+            // Perform the POST request using RestTemplate
+            ResponseEntity<String> responseEntity = restTemplate.postForEntity("http://localhost:8086/send-email", requestEntity, String.class);
+        }
+
+
 
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
     }

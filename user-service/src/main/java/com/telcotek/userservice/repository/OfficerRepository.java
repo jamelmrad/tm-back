@@ -8,4 +8,5 @@ import java.util.List;
 
 @Repository
 public interface OfficerRepository extends JpaRepository<Officer, Long> {
+    List<Officer> findAllById(Long id);
 }
