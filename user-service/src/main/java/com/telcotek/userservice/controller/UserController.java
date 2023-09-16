@@ -40,7 +40,7 @@ public class UserController {
 
     @GetMapping("/{id}/mission-ids")
     @ResponseBody
-    public List<Long> getAllMissionIds(@PathVariable("id") Long id) {
+    public List<Long> getAllUserMissions(@PathVariable("id") Long id) {
             return userService.retrieveUserMissions(id);
     }
 
@@ -88,13 +88,7 @@ public class UserController {
     public Boolean existence(@RequestParam String email) {
         return userService.existsByEmail(email);
     }
-/*
-    @GetMapping("/missions-ids")
-    @ResponseBody
-    public List<Long> getMissionIds(@RequestParam("email") String email) {
-        return userService.retrieveMissionsIdsFromUserId(email);
-    }
-*/
+
     @PutMapping("/update")
     public void availableUser(@RequestParam("email") String email) {
         userService.setUserAvailable(email);

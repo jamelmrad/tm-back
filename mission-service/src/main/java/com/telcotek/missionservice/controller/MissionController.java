@@ -1,9 +1,7 @@
 package com.telcotek.missionservice.controller;
 
 import com.telcotek.missionservice.dto.MissionRequest;
-import com.telcotek.missionservice.model.Mission;
-import com.telcotek.missionservice.model.Status;
-import com.telcotek.missionservice.model.Task;
+import com.telcotek.missionservice.model.*;
 import com.telcotek.missionservice.service.MissionService;
 import com.telcotek.missionservice.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,11 +99,11 @@ public class MissionController {
         }
     }
 
-    @GetMapping("/from-ids")
+    @GetMapping("/from-ids/{userId}")
     @ResponseBody
-    public ResponseEntity<List<Mission>> getAllMissionsFromIds(@RequestParam("email") String email) {
+    public ResponseEntity<List<Mission>> getAllMissionsFromIds(@PathVariable("userId") Long userId) {
         try {
-            List<Mission> missions = missionService.retrieveAllMissionsFromIds(email);
+            List<Mission> missions = missionService.retrieveAllMissionsFromIds(userId);
 
             return new ResponseEntity<>(missions, HttpStatus.OK);
         } catch (Exception e) {

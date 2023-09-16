@@ -247,27 +247,16 @@ public class MissionService {
         return mission.getTasks();
     }
 
-    public List<Mission> retrieveAllMissionsFromIds(String email) {
+    public List<Mission> retrieveAllMissionsFromIds(Long userId) {
 
         /** Get mission Ids from user-service */
-        String apiUrl = "http://localhost:8084/api/users/missions-ids";
-
-        // Define the request parameters
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
-        // Create a request body with the parameters
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.add("email", email);
-
-        // Create an HttpEntity with the request body and headers
-        HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(params, headers);
+        String apiUrl = "http://localhost:8084/api/users/" + userId + "/mission-ids";
 
         // Perform the GET request using RestTemplate
         ResponseEntity<List<Long>> response = restTemplate.exchange(
                 apiUrl,
                 HttpMethod.GET,
-                requestEntity,
+                null,
                 new ParameterizedTypeReference<List<Long>>() {}
         );
 

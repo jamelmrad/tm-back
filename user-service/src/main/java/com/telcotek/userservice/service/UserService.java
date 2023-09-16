@@ -173,15 +173,5 @@ public class UserService {
 
         return missionIds;
     }
-/*
-    public List<Long> retrieveMissionsIdsFromUserId(String email) {
-        Long userId = userRepository.findByEmail(email).get().getId();
-        List<Team> teams = retrieveTeamsFromUserId(userId);
-        List<Long> mission_ids = new ArrayList<>();
-        for (Team team:teams) {
-            mission_ids.add(team.getMissionId());
-        }
-        return mission_ids;
-    } */ // this will help in mission service + chat service ====> check implementation
 
 }
