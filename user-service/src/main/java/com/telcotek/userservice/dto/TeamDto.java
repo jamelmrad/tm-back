@@ -8,8 +8,8 @@ import java.util.List;
 @Data
 public class TeamDto {
     String name;
-    List<Officer> officers;
-    List<Admin> admins;
-    SuperAdmin superAdmin;
+    List<User> officers;
+    List<User> admins;
+    User superAdmin;
     Long missionId;
 }

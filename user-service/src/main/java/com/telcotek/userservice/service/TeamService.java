@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -60,38 +61,38 @@ public class TeamService {
 
     /** CREATE FUNCTIONS */
     public Team createTeam(TeamDto teamDto) {
-        Integer members = teamDto.getAdmins().size() + teamDto.getOfficers().size() +1;
+        Integer members = teamDto.getAdmins().size() + teamDto.getOfficers().size() + 1;
 
         Team team = Team.builder()
                 .name(teamDto.getName())
                 .numberOfTeamMembers(members)
                 .missionId(teamDto.getMissionId())
-                .officers(teamDto.getOfficers())
-                .admins(teamDto.getAdmins())
-                .superAdmin(teamDto.getSuperAdmin())
                 .build();
 
-
-        for (Officer officer:team.getOfficers()) {
+        List<Officer> officerList = new ArrayList<>();
+        for (User user:teamDto.getOfficers()){
+            Officer officer = new Officer(user);
             officer.setTeam(team);
-            officer.setAvailable(Boolean.FALSE);
+            officerList.add(officer);
         }
-        for (Admin admin:team.getAdmins()) {
+        officerRepository.saveAll(officerList);
+        team.setOfficers(officerList);
+
+        List<Admin> adminList = new ArrayList<>();
+        for (User user:teamDto.getAdmins()){
+            Admin admin = new Admin(user);
             admin.setTeam(team);
-            admin.setAvailable(Boolean.FALSE);
+            adminList.add(admin);
         }
-        teamRepository.save(team);
+        adminRepository.saveAll(adminList);
+        team.setAdmins(adminList);
 
-        SuperAdmin superAdmin = team.getSuperAdmin();
-        superAdmin.setTeam(team);
-        superAdmin.setAvailable(Boolean.FALSE);
-
+        SuperAdmin superAdmin = new SuperAdmin(teamDto.getSuperAdmin());
+        superAdmin.setTeam(team);team.setSuperAdmin(superAdmin);
         superAdminRepository.save(superAdmin);
 
-        officerRepository.saveAll(team.getOfficers());
 
-        adminRepository.saveAll(team.getAdmins());
-
+        teamRepository.save(team);
         return team;
     }
 

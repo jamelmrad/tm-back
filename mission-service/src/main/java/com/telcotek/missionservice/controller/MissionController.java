@@ -36,13 +36,9 @@ public class MissionController {
 
     @PostMapping("/add")
     public ResponseEntity<Mission> createMission(@RequestBody MissionRequest missionRequest) {
-        try {
             Mission mission = missionService.createMission(missionRequest);
 
             return new ResponseEntity<>(mission, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
     } //
 
     @PostMapping("/{id}/add-tasks")

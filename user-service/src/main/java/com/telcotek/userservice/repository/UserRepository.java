@@ -1,6 +1,5 @@
 package com.telcotek.userservice.repository;
 
-import com.telcotek.userservice.model.Admin;
 import com.telcotek.userservice.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -14,8 +13,10 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long> {
 
     List<User> findAllByAvailableTrue();
-    Optional<User> findByEmail(String email);
     Boolean existsByEmail(String email);
+
+    @Query(value = "SELECT * FROM t_users WHERE email = :userEmail", nativeQuery = true)
+    List<User> findMemberByEmail(@Param("userEmail")String email);
 
     @Query(value = "SELECT * FROM t_users WHERE id = :userId", nativeQuery = true)
     User get(@Param("userId")Long id);
@@ -28,7 +29,4 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query(value = "SELECT * FROM t_users WHERE member_type = 'User' AND connected = true", nativeQuery = true)
     List<User> onlineMembers();
-
-    @Query(value = "SELECT * FROM t_users WHERE member_type = 'User' AND connected = false", nativeQuery = true)
-    List<User> offlineMembers();
 }

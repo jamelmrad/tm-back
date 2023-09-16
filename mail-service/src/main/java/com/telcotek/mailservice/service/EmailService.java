@@ -35,7 +35,7 @@ public class EmailService {
 
             // Create a Thymeleaf context to populate the template
             Context context = new Context();
-            context.setVariable("linkIdentifier", "http://localhost:8081/verify-account-mod/"+linkIdentifier);
+            context.setVariable("linkIdentifier", "http://localhost:8081/verify-account-mod/"+linkIdentifier+"/"+to);
 
             // Process the HTML template with Thymeleaf
             String htmlContent = templateEngine.process("mod-verif", context);

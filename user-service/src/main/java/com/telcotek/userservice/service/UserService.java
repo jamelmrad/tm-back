@@ -62,15 +62,15 @@ public class UserService {
     }
 
     public User retrieveUserById(Long userId) {
-        return userRepository.findById(userId).get();
+        return userRepository.get(userId);
     }
 
-    public Optional<User> retrieveUserByEmail(String email) {
-        return userRepository.findByEmail(email);
+    public User retrieveUserByEmail(String email) {
+        return userRepository.findMemberByEmail(email).get(0);
     }
 
     public String retrieveUserFullName(String email) {
-        User user = userRepository.findByEmail(email).get();
+        User user = retrieveUserByEmail(email);
         return user.getFirstname() + " " + user.getLastname();
     }
 
@@ -101,7 +101,7 @@ public class UserService {
     }
 
     public void setUserAvailable(String userEmail) {
-        User user = userRepository.findByEmail(userEmail).get();
+        User user = retrieveUserByEmail(userEmail);
         user.setAvailable(Boolean.TRUE);
         userRepository.save(user);
         notifyUserDetailsUpdate(user.getId());
@@ -109,7 +109,7 @@ public class UserService {
     }
 
     public Boolean emailVerified(String email) {
-        User user = userRepository.findByEmail(email).get();
+        User user = retrieveUserByEmail(email);
         return user.getEmailVerified();
     }
 
@@ -122,7 +122,7 @@ public class UserService {
     }
 
     public void setOnline(String email) {
-        User user = userRepository.findByEmail(email).get();
+        User user = retrieveUserByEmail(email);
         user.setConnected(Boolean.TRUE);
         userRepository.save(user);
         notifyUserDetailsUpdate(user.getId());
@@ -130,7 +130,7 @@ public class UserService {
     }
 
     public void setOffline(String email) {
-        User user = userRepository.findByEmail(email).get();
+        User user = retrieveUserByEmail(email);
         user.setConnected(Boolean.FALSE);
         userRepository.save(user);
         notifyUserDetailsUpdate(user.getId());
@@ -138,13 +138,21 @@ public class UserService {
     }
 
     public void setPassword(String email ,String password) {
-        User user = userRepository.findByEmail(email).get();
+        User user = retrieveUserByEmail(email);
         user.setPassword(password);
         user.setEmailVerified(Boolean.TRUE);
         user.setAvailable(Boolean.TRUE);
         userRepository.save(user);
         notifyUserListUpdate();
         notifyUserDetailsUpdate(user.getId());
+    }
+
+    public void verifyUserAccount(String email) {
+        User user = retrieveUserByEmail(email);
+        user.setEmailVerified(Boolean.TRUE);
+        userRepository.save(user);
+        notifyUserDetailsUpdate(user.getId());
+        notifyUserListUpdate();
     }
 
     public List<Long> retrieveUserMissions(Long userId) {

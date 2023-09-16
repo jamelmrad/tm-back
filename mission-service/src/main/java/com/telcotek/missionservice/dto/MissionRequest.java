@@ -1,7 +1,5 @@
 package com.telcotek.missionservice.dto;
 
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import lombok.Getter;
 
 import java.time.LocalDateTime;

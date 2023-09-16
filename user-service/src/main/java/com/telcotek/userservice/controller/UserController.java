@@ -80,7 +80,7 @@ public class UserController {
     @GetMapping("/get")
     @ResponseBody
     public User get(@RequestParam("email") String email) {
-        return userService.retrieveUserByEmail(email).get();
+        return userService.retrieveUserByEmail(email);
     }
 
     @GetMapping("/existence")
@@ -107,5 +107,10 @@ public class UserController {
     @PutMapping("/setOffline")
     public void setUserOffline(@RequestParam("email") String email) {
         userService.setOffline(email);
+    }
+
+    @PutMapping("/verify-account")
+    public void verifyAccount(@RequestParam("email") String email) {
+        userService.verifyUserAccount(email);
     }
 }
