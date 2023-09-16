@@ -1,6 +1,10 @@
 package com.telcotek.userservice.controller;
 
 import com.telcotek.userservice.model.*;
+import com.telcotek.userservice.repository.AdminRepository;
+import com.telcotek.userservice.repository.OfficerRepository;
+import com.telcotek.userservice.repository.SuperAdminRepository;
+import com.telcotek.userservice.repository.UserRepository;
 import com.telcotek.userservice.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,18 +33,15 @@ public class UserController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<User>> getAllUsers() {
-        try {
-            List<User> users = userService.getAllUsers();
+    @ResponseBody
+    public List<User> getAllUsers() {
+            return userService.getAllUsers();
+    }
 
-            if (users.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            }
-
-            return new ResponseEntity<>(users, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    @GetMapping("/{id}/mission-ids")
+    @ResponseBody
+    public List<Long> getAllMissionIds(@PathVariable("id") Long id) {
+            return userService.retrieveUserMissions(id);
     }
 
     @GetMapping("/users-available")
@@ -87,13 +88,13 @@ public class UserController {
     public Boolean existence(@RequestParam String email) {
         return userService.existsByEmail(email);
     }
-
+/*
     @GetMapping("/missions-ids")
     @ResponseBody
     public List<Long> getMissionIds(@RequestParam("email") String email) {
         return userService.retrieveMissionsIdsFromUserId(email);
     }
-
+*/
     @PutMapping("/update")
     public void availableUser(@RequestParam("email") String email) {
         userService.setUserAvailable(email);

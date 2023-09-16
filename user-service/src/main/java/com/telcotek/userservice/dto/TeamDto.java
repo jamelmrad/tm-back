@@ -10,5 +10,6 @@ public class TeamDto {
     String name;
     List<Officer> officers;
     List<Admin> admins;
+    SuperAdmin superAdmin;
     Long missionId;
 }

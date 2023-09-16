@@ -33,7 +33,7 @@ public class UserService {
 
     /** REAL-TIME UPDATES */
     public void notifyUserListUpdate() {
-        messagingTemplate.convertAndSend("/task-management/users", getAllUsers());
+        messagingTemplate.convertAndSend("/task-management/users", getAll());
     }
 
     public void notifyUserDetailsUpdate(Long userId) {
@@ -45,12 +45,16 @@ public class UserService {
         notifyUserListUpdate();
     }
 
-    public List<User> getAllUsers() {
+    public List<User> getAll() {
         return userRepository.findAll();
     }
 
+    public List<User> getAllUsers() {
+        return userRepository.findAllMembers();
+    }
+
     public List<User> getAllOnlineUsers() {
-        return userRepository.findAllByConnectedTrue();
+        return userRepository.onlineMembers();
     }
 
     public List<User> retrieveAllAvailableUsers() {
@@ -143,26 +147,33 @@ public class UserService {
         notifyUserDetailsUpdate(user.getId());
     }
 
-    public List<Team> retrieveTeamsFromUserId(Long userId) {
-        List<Admin> admins = adminRepository.findAllById(userId);
-        List<SuperAdmin> superAdmins = superAdminRepository.findAllById(userId);
-        List<Officer> officers = officerRepository.findAllById(userId);
+    public List<Long> retrieveUserMissions(Long userId) {
 
-        List<Team> teams = new ArrayList<>();
+        User user = userRepository.get(userId);
+        String userEmail = user.getEmail();
 
-        for (Admin admin:admins) {
-            teams.add(admin.getAdminTeam());
+        List<User> admins = userRepository.getAllByMemberType("admin",userEmail);
+        List<User> superAdmins = userRepository.getAllByMemberType("superadmin",userEmail);
+        List<User> officers = userRepository.getAllByMemberType("officer",userEmail);
+
+        List<Long> missionIds = new ArrayList<>();
+
+        for (User admin:admins) {
+            Admin x = adminRepository.get(admin.getId());
+            missionIds.add(x.getTeam().getMissionId());
         }
-        for (SuperAdmin superAdmin:superAdmins) {
-            teams.add(superAdmin.getTeam());
+        for (User superAdmin:superAdmins) {
+            SuperAdmin x = superAdminRepository.get(superAdmin.getId());
+            missionIds.add(x.getTeam().getMissionId());
         }
-        for (Officer officer:officers) {
-            teams.add(officer.getOfficerTeam());
+        for (User officer:officers) {
+            Officer x = officerRepository.get(officer.getId());
+            missionIds.add(x.getTeam().getMissionId());
         }
 
-        return teams;
+        return missionIds;
     }
-
+/*
     public List<Long> retrieveMissionsIdsFromUserId(String email) {
         Long userId = userRepository.findByEmail(email).get().getId();
         List<Team> teams = retrieveTeamsFromUserId(userId);
@@ -171,6 +182,6 @@ public class UserService {
             mission_ids.add(team.getMissionId());
         }
         return mission_ids;
-    } // this will help in mission service + chat service ====> check implementation
+    } */ // this will help in mission service + chat service ====> check implementation
 
 }

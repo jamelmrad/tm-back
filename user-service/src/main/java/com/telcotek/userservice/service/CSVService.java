@@ -2,6 +2,8 @@ package com.telcotek.userservice.service;
 
 import com.opencsv.exceptions.CsvException;
 import com.telcotek.userservice.helper.CSVReader;
+import com.telcotek.userservice.model.ERole;
+import com.telcotek.userservice.model.Role;
 import com.telcotek.userservice.model.User;
 import com.telcotek.userservice.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +18,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class CSVService {
@@ -29,11 +29,18 @@ public class CSVService {
     @Autowired
     RestTemplate restTemplate;
 
+    @Autowired
+    UserService userService;
+
     public void save(MultipartFile file) {
         try {
             List<String[]> records = CSVReader.readCsv(file);
             records.remove(0);
             List<User> usersList = new ArrayList<>();
+
+            Set<Role> roles = new HashSet<>();
+            Role role = userService.getByName(ERole.ROLE_CLIENT);
+            roles.add(role);
 
             for(String[] csvRecord : records) {
                 User user = User.builder()
@@ -46,10 +53,12 @@ public class CSVService {
                         .available(Boolean.FALSE)
                         .connected(Boolean.FALSE)
                         .emailVerified(Boolean.FALSE)
+                        .roles(roles)
                         .build();
                 usersList.add(user);
 
                 userRepository.save(user);
+                userService.notifyUserListUpdate();
 
                 // send email for each user : code below
 
@@ -68,9 +77,6 @@ public class CSVService {
 
                 // Perform the POST request using RestTemplate
                 restTemplate.postForEntity("http://localhost:8086/send-email", requestEntity, String.class);
-
-
-
 
             }
             //userRepository.saveAll(usersList);

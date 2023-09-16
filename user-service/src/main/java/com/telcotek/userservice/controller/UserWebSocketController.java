@@ -1,5 +1,6 @@
 package com.telcotek.userservice.controller;
 
+import com.telcotek.userservice.model.Admin;
 import com.telcotek.userservice.model.User;
 import com.telcotek.userservice.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;

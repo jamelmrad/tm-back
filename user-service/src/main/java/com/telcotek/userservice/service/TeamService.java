@@ -62,30 +62,22 @@ public class TeamService {
     public Team createTeam(TeamDto teamDto) {
         Integer members = teamDto.getAdmins().size() + teamDto.getOfficers().size() +1;
 
-        // Define the URL of the endpoint you want to send the GET request to
-        String url = "http://localhost:8080/api/auth";
-
-        // Perform the GET request using RestTemplate and receive the response as a String
-        String response = restTemplate.getForObject(url, String.class);
-
-        User user = userRepository.findByEmail(response).get();
-
         Team team = Team.builder()
                 .name(teamDto.getName())
                 .numberOfTeamMembers(members)
                 .missionId(teamDto.getMissionId())
                 .officers(teamDto.getOfficers())
                 .admins(teamDto.getAdmins())
-                .superAdmin((SuperAdmin) user)
+                .superAdmin(teamDto.getSuperAdmin())
                 .build();
 
 
         for (Officer officer:team.getOfficers()) {
-            officer.setOfficerTeam(team);
+            officer.setTeam(team);
             officer.setAvailable(Boolean.FALSE);
         }
         for (Admin admin:team.getAdmins()) {
-            admin.setAdminTeam(team);
+            admin.setTeam(team);
             admin.setAvailable(Boolean.FALSE);
         }
         teamRepository.save(team);

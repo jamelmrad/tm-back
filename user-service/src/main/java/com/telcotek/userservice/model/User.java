@@ -15,11 +15,9 @@ import java.util.Set;
 @NoArgsConstructor
 @Data
 @Entity
-@Inheritance(strategy = InheritanceType.JOINED)
-@Table(name = "t_users",
-        uniqueConstraints = {
-                @UniqueConstraint(columnNames = "email")
-        })
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "member_type", discriminatorType = DiscriminatorType.STRING)
+@Table(name = "t_users")
 @Builder
 public class User {
     @Id

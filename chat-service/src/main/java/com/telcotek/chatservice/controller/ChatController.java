@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:8081", allowCredentials = "true")
 @RestController
 @RequestMapping("/api/chat")
 public class ChatController {
@@ -29,16 +30,11 @@ public class ChatController {
         return chatService.getMessages(chatId);
     }
 
-    @GetMapping("/from-ids")
+    @GetMapping("/{id}/from-ids")
     @ResponseBody
-    public ResponseEntity<List<Chat>> getAllFromMissionsIds(@RequestParam("email") String email) {
-        try {
-            List<Chat> chats = chatService.retrieveAllFromMissionIds(email);
-
+    public ResponseEntity<List<Chat>> getAllFromMissionsIds(@PathVariable("id") Long id) {
+            List<Chat> chats = chatService.getAll(id);
             return new ResponseEntity<>(chats, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
     }
 
 }

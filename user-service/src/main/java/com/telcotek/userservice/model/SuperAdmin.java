@@ -10,12 +10,10 @@ import lombok.NoArgsConstructor;
 @Entity
 @Data
 @NoArgsConstructor
-@Table(name = "t_superadmins")
+@DiscriminatorValue("superadmin")
 public class SuperAdmin extends User{
 
-    @OneToOne
-    @JoinColumn(name = "team_id",nullable = false)
-            @JsonIgnore
+    @OneToOne(mappedBy = "superAdmin", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     Team team;
 
     public void setTeam(Team team) {

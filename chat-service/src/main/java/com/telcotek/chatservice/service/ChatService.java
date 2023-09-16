@@ -2,6 +2,7 @@ package com.telcotek.chatservice.service;
 
 import com.telcotek.chatservice.models.*;
 import com.telcotek.chatservice.repository.*;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
@@ -16,6 +17,20 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+
+
+class LongListResponse {
+    private List<Long> data;
+
+    public List<Long> getData() {
+        return data;
+    }
+
+    public void setData(List<Long> data) {
+        this.data = data;
+    }
+}
 
 @Service
 public class ChatService {
@@ -110,6 +125,25 @@ public class ChatService {
             chats.add(chatRepository.findByMissionId(id).get());
         }
         return chats;
+    }
+
+    public List<Chat> getAll(Long userId) {
+        List<Chat> chats = new ArrayList<>();
+
+        String url = "http://localhost:8084/api/users/" +userId+"/mission-ids";
+
+        ResponseEntity<List<Long>> response = restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<Long>>() {}
+        );
+
+        for (Long id:response.getBody()) {
+            chats.add(chatRepository.findByMissionId(id).get());
+        }
+        return chats;
+
     }
 
 }

@@ -10,11 +10,11 @@ import lombok.NoArgsConstructor;
 @Entity
 @Data
 @NoArgsConstructor
-@Table(name = "t_admins")
+@DiscriminatorValue("admin")
 public class Admin extends User{
 
     @ManyToOne
     @JoinColumn(name = "team_id")
             @JsonIgnore
-    Team adminTeam;
+    Team team;
 }

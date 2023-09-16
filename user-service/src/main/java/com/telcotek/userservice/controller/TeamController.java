@@ -12,7 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/teams")
-@CrossOrigin("*")
+@CrossOrigin(origins = "http://localhost:8081", allowCredentials = "true")
 public class TeamController {
 
     @Autowired

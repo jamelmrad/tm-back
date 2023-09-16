@@ -11,7 +11,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-//@CrossOrigin("http://localhost:8080")
 @CrossOrigin(origins = "http://localhost:8081", allowCredentials = "true")@Controller
 @RequestMapping("/api/csv")
 public class CSVController {
@@ -19,16 +18,12 @@ public class CSVController {
     @Autowired
     CSVService fileService;
 
-    @Autowired
-    UserService userService;
-
     @PostMapping("/upload")
     public ResponseEntity<ResponseMessage> upload(@RequestParam("file") MultipartFile file) {
         String message = "";
 
         if (CSVHelper.hasCSVFormat(file)) {
                 fileService.save(file);
-                userService.notifyUserListUpdate();
 
                 message = "Uploaded the file successfully: " + file.getOriginalFilename();
                 return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(message));
