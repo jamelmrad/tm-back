@@ -1,5 +1,6 @@
 package com.telcotek.userservice.service;
 
+import com.telcotek.userservice.dto.UserDto;
 import com.telcotek.userservice.model.*;
 import com.telcotek.userservice.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,7 +63,8 @@ public class UserService {
     }
 
     public User retrieveUserById(Long userId) {
-        return userRepository.get(userId);
+       // return userRepository.get(userId);
+        return userRepository.findById(userId).get();
     }
 
     public User retrieveUserByEmail(String email) {
@@ -115,6 +117,12 @@ public class UserService {
 
     public Boolean existsByEmail(String email) {
         return userRepository.existsByEmail(email);
+    }
+
+    public void update(User user,Long id) {
+        if (userRepository.existsById(id)) {
+            userRepository.save(user);
+        }
     }
 
     public Role getByName(ERole name) {

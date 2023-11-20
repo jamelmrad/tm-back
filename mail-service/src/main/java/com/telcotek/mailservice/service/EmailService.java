@@ -38,7 +38,7 @@ public class EmailService {
             context.setVariable("linkIdentifier", "http://localhost:8081/verify-account-mod/"+linkIdentifier+"/"+to);
 
             // Process the HTML template with Thymeleaf
-            String htmlContent = templateEngine.process("mod-verif", context);
+            String htmlContent = templateEngine.process("/api/mailing/mod-verif.html", context);
 
             // Set the HTML content as the email body
             helper.setText(htmlContent, true);
@@ -65,7 +65,7 @@ public class EmailService {
             context.setVariable("linkIdentifier", "http://localhost:8081/verify-account/"+linkIdentifier+"/"+to);
 
             // Process the HTML template with Thymeleaf
-            String htmlContent = templateEngine.process("send-email", context);
+            String htmlContent = templateEngine.process("/api/mailing/send-email.html", context);
 
             // Set the HTML content as the email body
             helper.setText(htmlContent, true);

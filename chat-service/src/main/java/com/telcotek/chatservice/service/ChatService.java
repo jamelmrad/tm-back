@@ -6,7 +6,9 @@ import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,21 +18,10 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-
-
-
-class LongListResponse {
-    private List<Long> data;
-
-    public List<Long> getData() {
-        return data;
-    }
-
-    public void setData(List<Long> data) {
-        this.data = data;
-    }
-}
+import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 @Service
 public class ChatService {
@@ -44,6 +35,9 @@ public class ChatService {
     @Autowired
     RestTemplate restTemplate;
 
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
+
     public void create(Long mission_id, String mission_title) {
         Chat chat = Chat.builder()
                 .missionId(mission_id)
@@ -52,6 +46,7 @@ public class ChatService {
                 .messages(new ArrayList<>())
                 .build();
         chatRepository.save(chat);
+        messagingTemplate.convertAndSend("/task-management/chats", chatRepository.findAll()); // no user id ???!
     }
 
     public Chat getChat(String chatId) {
@@ -67,16 +62,40 @@ public class ChatService {
         chatRepository.save(chat);
     }
 
-    public void send(
+    public Message send(
             String chatId,
-            Message message
+            String content,
+            String teamName,
+            String fullName
     ) {
-        LocalDateTime time = LocalDateTime.now();
-        message.setSent_time(time);
-        message.setSender_fullName(getSenderFullName());
-        List<Message> messages = getMessages(chatId);
+        Chat chat = chatRepository.findById(chatId).get();
+        Message message = Message.builder()
+                .content(content)
+                .sent_time(LocalDateTime.now())
+                .sender_fullName(fullName)
+                .team_name(teamName)
+                .build();
+        List<Message> messages = chat.getMessages();
         messages.add(message);
-        setMessages(getChat(chatId),messages);
+        chat.setMessages(messages);
+        messageRepository.save(message);
+        chatRepository.save(chat);
+        messagingTemplate.convertAndSend("/task-management/chats/"+ chatId, getMessages(chatId));
+        return message;
+    }
+
+    public void deleteAllMessages(String chatId) {
+        Chat chat = chatRepository.findById(chatId).get();
+
+        chat.getMessages().removeAll(chat.getMessages());
+        chatRepository.save(chat);
+        messagingTemplate.convertAndSend("/task-management/chats/"+ chatId, getMessages(chatId));
+
+        messagingTemplate.convertAndSend("/task-management/chats", chatRepository.findAll());
+    }
+
+    public List<Chat> all() {
+        return chatRepository.findAll();
     }
 
     public String getSenderFullName() {
@@ -144,6 +163,18 @@ public class ChatService {
         }
         return chats;
 
+    }
+
+    public List<Chat> getAllUserChats(String missionIds) {
+        List<Long> ids = Arrays.stream(missionIds.split(","))
+                .map(Long::valueOf)
+                .collect(Collectors.toList());
+
+        return chatRepository.findByMissionIdIn(ids);
+    }
+
+    public List<Chat> getAllMod() {
+        return  chatRepository.findAll();
     }
 
 }

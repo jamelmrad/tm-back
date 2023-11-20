@@ -24,6 +24,14 @@ public class ChatController {
         chatService.create(mission_id,mission_title);
     }
 
+    @PostMapping("/{id}/send/{team}/{fn}")
+    public void send(@PathVariable("id") String id,
+                     @PathVariable("team") String teamName,
+                     @RequestBody String message,
+                     @PathVariable("fn") String fullName) {
+        chatService.send(id,message,teamName,fullName);
+    }
+
     @GetMapping("/{chatId}/messages")
     @ResponseBody
     public List<Message> messages(@PathVariable("chatId") String chatId) {
@@ -35,6 +43,24 @@ public class ChatController {
     public ResponseEntity<List<Chat>> getAllFromMissionsIds(@PathVariable("id") Long id) {
             List<Chat> chats = chatService.getAll(id);
             return new ResponseEntity<>(chats, HttpStatus.OK);
+    }
+
+    @GetMapping("/all")
+    @ResponseBody
+    public List<Chat> all() {
+        List<Chat> chats = chatService.getAllMod();
+        return chats;
+    }
+
+    @DeleteMapping("/{id}/delete-messages")
+    public void deleteAll(@PathVariable("id") String id) {
+        chatService.deleteAllMessages(id);
+    }
+
+    @GetMapping("/user-chats/{missionIds}")
+    @ResponseBody
+    public List<Chat> userChats(@PathVariable("missionIds") String missionIds) {
+        return chatService.getAllUserChats(missionIds);
     }
 
 }

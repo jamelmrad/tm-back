@@ -47,7 +47,7 @@ public class CSVService {
                         .Id(Long.parseLong(csvRecord[0]))
                         .firstname(csvRecord[1])
                         .lastname(csvRecord[2])
-                        .phoneNumber(Long.parseLong(csvRecord[3]))
+                        .phoneNumber(csvRecord[3])
                         .email(csvRecord[4])
                         .password("changeMe")
                         .available(Boolean.FALSE)

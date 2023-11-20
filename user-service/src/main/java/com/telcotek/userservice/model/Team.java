@@ -25,8 +25,8 @@ public class Team {
     @OneToMany(mappedBy = "team")
     List<Officer> officers;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "super_admin_id")
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "team")
+    //@JoinColumn(name = "super_admin_id")
     SuperAdmin superAdmin;
 
     @OneToMany(mappedBy = "team")

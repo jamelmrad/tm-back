@@ -38,6 +38,20 @@ public class FileController {
         }
     }
 
+    @PutMapping("/profile_picture/{userId}")
+    public ResponseEntity<ResponseMessage> uploadProfilePic(@RequestParam("file") MultipartFile file,@PathVariable("userId") Long id) {
+        String message = "";
+        try {
+            storageService.changeProfilePicture(file,id);
+
+            message = "Uploaded the file successfully: " + file.getOriginalFilename();
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(message));
+        } catch (Exception e) {
+            message = "Could not upload the file: " + file.getOriginalFilename() + "! please try again .";
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
+        }
+    }
+
     @GetMapping("/files")
     public ResponseEntity<List<ResponseFile>> getListFiles() {
         List<ResponseFile> files = storageService.getAllFiles().map(dbFile -> {
@@ -60,6 +74,15 @@ public class FileController {
     @GetMapping("/files/{id}")
     public ResponseEntity<byte[]> getFile(@PathVariable String id) {
         FileDB fileDB = storageService.getFile(id);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileDB.getName() + "\"")
+                .body(fileDB.getData());
+    }
+
+    @GetMapping("/profile_pic/{id}")
+    public ResponseEntity<byte[]> getProfilePic(@PathVariable Long id) {
+        FileDB fileDB = storageService.getProfilePicture(id);
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileDB.getName() + "\"")

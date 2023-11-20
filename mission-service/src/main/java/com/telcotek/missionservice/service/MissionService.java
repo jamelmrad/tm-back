@@ -6,6 +6,7 @@ import com.telcotek.missionservice.model.Mission;
 import com.telcotek.missionservice.model.Status;
 import com.telcotek.missionservice.model.Task;
 import com.telcotek.missionservice.repository.MissionRepository;
+import com.telcotek.missionservice.repository.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
@@ -32,9 +33,12 @@ public class MissionService {
     MissionRepository missionRepository;
 
     @Autowired
-    TaskService taskService;
-    @Autowired
+    TaskRepository taskRepository;
 
+    @Autowired
+    TaskService taskService;
+
+    @Autowired
     private SimpMessagingTemplate messagingTemplate;
 
     private final static String MISSION_NOT_FOUND_MSG = "Mission not found";
@@ -101,6 +105,11 @@ public class MissionService {
      }
 
     /** UPDATE FUNCTIONS */
+    public void updateMission(Mission mission) {
+        missionRepository.save(mission);
+        notifyMissionListUpdate();
+    }
+
     public void approveMission(Long missionId) {
         Mission mission = missionRepository.findById(missionId).orElseThrow(() -> new IllegalArgumentException(MISSION_NOT_FOUND_MSG));
         mission.setApproved(Boolean.TRUE);
@@ -148,6 +157,9 @@ public class MissionService {
     }
 
     /** RETRIEVE FUNCTIONS */
+    public List<Task> tasks() {
+        return taskRepository.findAll();
+    }
     public Object statusPercentage() {
 
         long totalMissions = missionRepository.findAll().size();
@@ -274,4 +286,10 @@ public class MissionService {
         missionRepository.delete(mission);
         notifyMissionListUpdate();
     }
+    public void deleteMissions(List<Mission> missions) {
+        for (Mission m:missions){
+            missionRepository.delete(m);
+        }
+    }
+
 }

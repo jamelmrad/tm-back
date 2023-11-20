@@ -30,4 +30,38 @@ public class FileStorageService {
     public Stream<FileDB> getAllFiles() {
         return fileDBRepository.findAll().stream();
     }
+
+    public FileDB changeProfilePicture(MultipartFile file, Long userId) throws IOException {
+        FileDB fileDB = fileDBRepository.findProfilePic(userId);
+        fileDB.setData(file.getBytes());
+        fileDB.setType(file.getContentType());
+
+        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+        fileDB.setName(fileName);
+
+        return fileDBRepository.save(fileDB);
+    }
+
+    public FileDB getProfilePicture(Long userId) {
+        return fileDBRepository.findProfilePic(userId);
+    }
+
+    public void updateFileDB(FileDB updatedFileDB) {
+        // Assuming updatedFileDB has the ID of the entity you want to update
+        if (updatedFileDB.getId() != null) {
+            // Fetch the existing entity from the database
+            FileDB existingFileDB = fileDBRepository.findById(updatedFileDB.getId()).orElse(null);
+
+            if (existingFileDB != null) {
+                // Update the properties of the existing entity
+                existingFileDB.setName(updatedFileDB.getName());
+                existingFileDB.setType(updatedFileDB.getType());
+                existingFileDB.setData(updatedFileDB.getData());
+
+                // Save the updated entity back to the database
+                fileDBRepository.save(existingFileDB);
+            }
+        }
+    }
+
 }

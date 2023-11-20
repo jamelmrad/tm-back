@@ -18,6 +18,7 @@ public class Message {
     private String sender_fullName; // get it from auth service : done
     private String team_name; // get it from user-service
     private LocalDateTime sent_time;
+    private String chatId;
 
-    //private List<Object> viewers;
+    //private List<Object> viewers; may be added later (PROBLEM)
 }

@@ -21,6 +21,10 @@ public class Mission extends WorkFlowMetric{
     private String title;
     private Integer priorityLevel;
     private Boolean approved;
+    private Double contributors;
+    private Double teams; // number of teams
+    private Double dtph; //done tasks per hours
+    private Double dtpm; // done tasks per minute
 
     @OneToMany(mappedBy = "mission", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
     List<Task> tasks;

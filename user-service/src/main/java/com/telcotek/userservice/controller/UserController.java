@@ -1,10 +1,6 @@
 package com.telcotek.userservice.controller;
 
 import com.telcotek.userservice.model.*;
-import com.telcotek.userservice.repository.AdminRepository;
-import com.telcotek.userservice.repository.OfficerRepository;
-import com.telcotek.userservice.repository.SuperAdminRepository;
-import com.telcotek.userservice.repository.UserRepository;
 import com.telcotek.userservice.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -35,7 +31,13 @@ public class UserController {
     @GetMapping("/all")
     @ResponseBody
     public List<User> getAllUsers() {
-            return userService.getAllUsers();
+            return userService.getAll();
+    }
+
+    @GetMapping("/online")
+    @ResponseBody
+    public List<User> getAllOnline() {
+        return userService.getAllOnlineUsers();
     }
 
     @GetMapping("/{id}/mission-ids")
@@ -45,18 +47,8 @@ public class UserController {
     }
 
     @GetMapping("/users-available")
-    public ResponseEntity<List<User>> getAllAvailableUsers() {
-        try {
-            List<User> availableUsers = userService.retrieveAllAvailableUsers();
-
-            if (availableUsers.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            }
-
-            return new ResponseEntity<>(availableUsers, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public List<User> getAllAvailableUsers() {
+            return userService.retrieveAllAvailableUsers();
     }
 
     @GetMapping()
@@ -102,6 +94,11 @@ public class UserController {
     @PutMapping("/setOnline")
     public void setUserOnline(@RequestParam("email") String email) {
         userService.setOnline(email);
+    }
+
+    @PutMapping("/update-user/{id}")
+    public void update(@RequestBody User user,@PathVariable("id") Long id) {
+        userService.update(user,id);
     }
 
     @PutMapping("/setOffline")

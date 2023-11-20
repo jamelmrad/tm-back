@@ -1,5 +1,6 @@
 package com.telcotek.authenticationservice.security.services;
 
+import com.telcotek.authenticationservice.repository.AuthUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.telcotek.userservice.model.User;
 import org.springframework.http.HttpMethod;
@@ -17,23 +18,13 @@ import java.util.Optional;
 public class UserDetailsServiceImpl implements UserDetailsService {
 
   @Autowired
-  RestTemplate restTemplate;
+  AuthUserRepository userRepository;
 
   @Override
   @Transactional
   public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-    // Call user-service to verify user existence
-    String userServiceUrl = "http://localhost:8084/api/users/get";
 
-    // Build the URL with request parameters
-    UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(userServiceUrl)
-            .queryParam("email",email);
-
-    Optional<User> user = Optional.ofNullable(restTemplate.exchange(
-            builder.toUriString(),
-            HttpMethod.GET, null,
-            User.class
-    ).getBody());
+    Optional<User> user = Optional.ofNullable(userRepository.findByEmail(email));
 
     return UserDetailsImpl.build(user);
   }

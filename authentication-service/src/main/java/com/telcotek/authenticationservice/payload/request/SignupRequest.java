@@ -25,6 +25,10 @@ public class SignupRequest {
 
     private Set<String> role;
 
+    @NotBlank
+    private String phoneNumber;
+
     private String password;
+
 
 }

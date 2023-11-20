@@ -13,7 +13,8 @@ import lombok.NoArgsConstructor;
 @DiscriminatorValue("superadmin")
 public class SuperAdmin extends User{
 
-    @OneToOne(mappedBy = "superAdmin", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "team_id")
             @JsonIgnore
     Team team;
 

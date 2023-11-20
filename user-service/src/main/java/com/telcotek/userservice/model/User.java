@@ -1,6 +1,5 @@
 package com.telcotek.userservice.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,7 +28,7 @@ public class User {
     private String email;
    // @JsonIgnore
     private String password;
-    private Long phoneNumber;
+    private String phoneNumber;
     private Boolean available;
     private Boolean connected;
     private Boolean emailVerified;
@@ -40,10 +39,11 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
 
-    public User(String firstname, String lastname, String email, String password) {
+    public User(String firstname, String lastname, String email,String phone, String password) {
         this.firstname = firstname;
         this.lastname = lastname;
         this.email = email;
+        this.phoneNumber = phone;
         this.password = password;
         this.available = Boolean.FALSE;
         this.connected = Boolean.FALSE;

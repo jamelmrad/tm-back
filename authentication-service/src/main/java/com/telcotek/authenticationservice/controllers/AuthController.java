@@ -2,6 +2,8 @@ package com.telcotek.authenticationservice.controllers;
 
 import com.telcotek.authenticationservice.payload.request.*;
 import com.telcotek.authenticationservice.payload.response.*;
+import com.telcotek.authenticationservice.repository.AuthUserRepository;
+import com.telcotek.authenticationservice.repository.RoleAuthRepository;
 import com.telcotek.authenticationservice.security.jwt.JwtUtils;
 import com.telcotek.authenticationservice.security.services.UserDetailsImpl;
 import com.telcotek.userservice.model.ERole;
@@ -19,12 +21,10 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-//for Angular Client (withCredentials)
 @CrossOrigin(origins = "http://localhost:8081", allowCredentials = "true")
 //@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -43,6 +43,13 @@ public class AuthController {
     @Autowired
     RestTemplate restTemplate;
 
+    @Autowired
+    AuthUserRepository authUserRepository;
+
+    @Autowired
+    RoleAuthRepository roleAuthRepository;
+
+
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
@@ -59,22 +66,9 @@ public class AuthController {
                 .map(item -> item.getAuthority())
                 .collect(Collectors.toList());
 
-        // Define the URL of the endpoint you want to send the PUT request to
-        String url = "http://localhost:8084/api/users/setOnline";
-
-        // Define the request parameters
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
-        // Create a request body with the parameters
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.add("email", loginRequest.getEmail());
-
-        // Create an HttpEntity with the request body and headers
-        HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(params, headers);
-
-        // Perform the PUT request using RestTemplate
-        restTemplate.put(url, requestEntity);
+        User user = authUserRepository.findByEmail(loginRequest.getEmail());
+        user.setConnected(Boolean.TRUE);
+        authUserRepository.save(user);
 
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
                 .body(new UserInfoResponse(userDetails.getId(),
@@ -108,31 +102,20 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
+    public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest ) {
 
-        // Call user-service to verify user existence
-        String userExistenceUrl = "http://localhost:8084/api/users/existence";
-
-        // Build the URL with request parameters
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(userExistenceUrl)
-                .queryParam("email",signUpRequest.getEmail());
-
-        Boolean exist = restTemplate.exchange(
-                builder.toUriString(),
-                HttpMethod.GET, null,
-                Boolean.class
-        ).getBody();
+        Boolean exist = authUserRepository.existsByEmail(signUpRequest.getEmail());
 
         if (exist) {
-            return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already in use!"));
+            return ResponseEntity.ok().body(new MessageResponse("Email is already in use!"));
         }
 
         // Create new user's account
-
         User user = new User(
                 signUpRequest.getFirstname(),
                 signUpRequest.getLastname(),
                 signUpRequest.getEmail(),
+                signUpRequest.getPhoneNumber(),
                 encoder.encode(signUpRequest.getPassword()));
         if (signUpRequest.getPassword() == "" || signUpRequest.getPassword() == null) {
             user.setPassword("changeme");
@@ -141,59 +124,25 @@ public class AuthController {
         Set<Role> roles = new HashSet<>();
 
         if (strRoles == null) {
-            // Call user-service to verify user existence
-            String userServiceUrl = "http://localhost:8084/api/users/existence";
-
-            // Build the URL with request parameters
-            UriComponentsBuilder secondBuilder = UriComponentsBuilder.fromHttpUrl(userServiceUrl)
-                    .queryParam("role",ERole.ROLE_CLIENT);
-
-            Role userRole = restTemplate.exchange(
-                    secondBuilder.toUriString(),
-                    HttpMethod.GET, null,
-                    Role.class).getBody();
-            roles.add(userRole);
+            Role r = new Role();
+            r.setName(ERole.ROLE_CLIENT);
+            roles.add(r);
         } else {
             strRoles.forEach(role -> {
                 switch (role) {
                     case "mod":
-                        // Call user-service to verify user existence
-                        String userServiceUrl = "http://localhost:8084/api/users/role";
-
-                        // Build the URL with request parameters
-                        UriComponentsBuilder secondBuilder = UriComponentsBuilder.fromHttpUrl(userServiceUrl)
-                                .queryParam("role",ERole.ROLE_MODERATOR);
-
-                        Role modRole = restTemplate.exchange(
-                                secondBuilder.toUriString(),
-                                HttpMethod.GET, null,
-                                Role.class).getBody();
-                        roles.add(modRole);
+                        roles.add(roleAuthRepository.findByName(ERole.ROLE_MODERATOR));
 
                         break;
                     default:
-                        // Call user-service to verify user existence
-                        String serServiceUrl = "http://localhost:8084/api/users/role";
-
-                        // Build the URL with request parameters
-                        UriComponentsBuilder thirdBuilder = UriComponentsBuilder.fromHttpUrl(serServiceUrl)
-                                .queryParam("role",ERole.ROLE_CLIENT);
-
-                        Role userRole = restTemplate.exchange(
-                                thirdBuilder.toUriString(),
-                                HttpMethod.GET, null,
-                                Role.class).getBody();
-                        roles.add(userRole);
+                        roles.add(roleAuthRepository.findByName(ERole.ROLE_CLIENT));
                 }
             });
         }
 
         user.setRoles(roles);
 
-        // Call user-service to save user
-        String userSaveUrl = "http://localhost:8084/api/users/new";
-
-        restTemplate.postForEntity(userSaveUrl,user,User.class);
+        authUserRepository.save(user);
 
         // Define the request parameters
         HttpHeaders headers = new HttpHeaders();
@@ -210,22 +159,20 @@ public class AuthController {
 
         if (signUpRequest.getRole().contains("mod")){
             // Perform the POST request using RestTemplate
-            ResponseEntity<String> responseEntity = restTemplate.postForEntity("http://localhost:8086/mod-verif", requestEntity, String.class);
+            ResponseEntity<String> responseEntity = restTemplate.postForEntity("http://localhost:8085/api/mailing/mod-verif", requestEntity, String.class);
         }else{
             // Perform the POST request using RestTemplate
-            ResponseEntity<String> responseEntity = restTemplate.postForEntity("http://localhost:8086/send-email", requestEntity, String.class);
+            ResponseEntity<String> responseEntity = restTemplate.postForEntity("http://localhost:8085/api/mailing/send-email", requestEntity, String.class);
         }
 
-
-
-        return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+        return ResponseEntity.ok(new MessageResponse("You are registered successfully! A verification email has been sent to " + signUpRequest.getEmail()));
     }
 
     @PostMapping("/signout")
     public ResponseEntity<?> logoutUser() {
         ResponseCookie cookie = jwtUtils.getCleanJwtCookie();
 
-        String url = "http://localhost:8084/api/users/setOffline";
+        String url = "http://localhost:8080/api/users/setOffline";
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null) {
@@ -248,26 +195,5 @@ public class AuthController {
                 .body(new MessageResponse("You've been signed out!"));
     }
 
-    @GetMapping()
-    @ResponseBody
-    public String get() {
-        String userServiceUrl = "http://localhost:8084/api/users";
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null) {
-
-            // authentication.getName(); // This gets the email of the authenticated user
-
-            // Build the URL with request parameters
-            UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(userServiceUrl)
-                    .queryParam("email", authentication.getName());
-
-            // Make the GET request to the user service
-            //return restTemplate.getForObject(builder.toUriString(), String.class);
-            return authentication.getName();
-
-        }
-        return null;
-    }
 }
 

@@ -2,6 +2,7 @@ package com.telcotek.missionservice.controller;
 
 import com.telcotek.missionservice.dto.MissionRequest;
 import com.telcotek.missionservice.model.*;
+import com.telcotek.missionservice.service.MetricsService;
 import com.telcotek.missionservice.service.MissionService;
 import com.telcotek.missionservice.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,9 @@ public class MissionController {
     @Autowired
     TaskService taskService;
 
+    @Autowired
+    MetricsService metricsService;
+
 
     // define similar endpoints in a similar way : e.g go this for all the methods below
     /*
@@ -35,7 +39,9 @@ public class MissionController {
     }*/
 
     @PostMapping("/add")
-    public ResponseEntity<Mission> createMission(@RequestBody MissionRequest missionRequest) {
+    public ResponseEntity<Mission> createMission(
+            @RequestBody MissionRequest missionRequest
+    ) {
             Mission mission = missionService.createMission(missionRequest);
 
             return new ResponseEntity<>(mission, HttpStatus.OK);
@@ -67,6 +73,11 @@ public class MissionController {
         }
     }
 
+    @PutMapping("/update")
+    public void updateMission(@RequestBody Mission mission) {
+            missionService.updateMission(mission);
+    }
+
     @GetMapping("/{id}")
     @ResponseBody
     public ResponseEntity<Mission> getMission(@PathVariable("id") Long missionId) {
@@ -78,6 +89,14 @@ public class MissionController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     } //
+
+    @GetMapping("/{id}/metrics")
+    @ResponseBody
+    public ResponseEntity<Metrics> getMissionMetrics(@PathVariable("id") Long missionId) {
+            Mission mission = missionService.retrieveMissionById(missionId);
+
+            return new ResponseEntity<Metrics>(metricsService.getMissionMetrics(mission), HttpStatus.OK);
+    }
 
     @GetMapping("/all")
     @ResponseBody
@@ -254,5 +273,26 @@ public class MissionController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     } //
+
+    @DeleteMapping ("/remove")
+    public void deleteMissions(@RequestBody List<Mission> missions) {
+            missionService.deleteMissions(missions);
+    }
+
+    @PostMapping("/test/{id}")
+    public void test(@PathVariable("id") Long missionId) {
+        taskService.createTasks(missionId);
+    }
+
+    @PostMapping("/test/status/{id}")
+    public void testStatus(@PathVariable("id") Long missionId) {
+        taskService.changeTasksStatus(missionId);
+    }
+
+    @GetMapping("/tasks")
+    @ResponseBody
+    public List<Task> tasks() {
+        return missionService.tasks();
+    }
 
 }
