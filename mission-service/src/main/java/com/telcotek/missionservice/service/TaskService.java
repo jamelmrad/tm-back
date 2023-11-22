@@ -75,7 +75,24 @@ public class TaskService {
             mission.addTask(task);
             missionRepository.save(mission);
             messagingTemplate.convertAndSend("/task-management/tasks", taskRepository.findAll());
+        }
+    }
 
+    public void addTasksToMission(List<Task> tasks, Long missionId) {
+        Mission mission = missionRepository.getReferenceById(missionId);
+        for (Task task:tasks){
+            Task t =Task.builder()
+                    .mission(mission)
+                    .name(task.getName())
+                    .description(task.getDescription())
+                    .build();
+            t.setStatus(Status.TODO);
+            t.setProgress(0.0);
+            t.setStartTime(task.getStartTime());
+            t.setEndedTime(task.getEndedTime());
+            taskRepository.save(t);
+            mission.addTask(task);
+            missionRepository.save(mission);
         }
     }
      /** test functions **/

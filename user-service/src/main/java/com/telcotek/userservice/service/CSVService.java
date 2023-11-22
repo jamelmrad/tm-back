@@ -76,7 +76,7 @@ public class CSVService {
                 HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(params, headers);
 
                 // Perform the POST request using RestTemplate
-                restTemplate.postForEntity("http://localhost:8086/send-email", requestEntity, String.class);
+                restTemplate.postForEntity("http://localhost:8085/api/mailing/send-email", requestEntity, String.class);
 
             }
             //userRepository.saveAll(usersList);

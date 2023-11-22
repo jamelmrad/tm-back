@@ -56,7 +56,7 @@ public class MissionService {
     /** CREATE FUNCTIONS */
     public Mission createMission(MissionRequest missionRequest) {
 
-        String chatServiceUrl= "http://localhost:8083/api/chat/new-chat";
+        String chatServiceUrl= "http://localhost:8080/api/chat/new-chat";
 
         Mission mission = Mission.builder()
                 .title(missionRequest.getTitle())
@@ -65,9 +65,11 @@ public class MissionService {
         mission.setStatus(Status.TODO);
         mission.setProgress(0.0);
         mission.setApproved(Boolean.FALSE);
+        mission.setTeams(0.0);
         mission.setStartTime(missionRequest.getStartTime());
         mission.setEndedTime(missionRequest.getEndedTime());
-        mission.setTasks(new ArrayList<>());
+        mission.setTasks(missionRequest.getTasks());
+        mission.setTeams(missionRequest.getTeams());
 
         missionRepository.save(mission);
 

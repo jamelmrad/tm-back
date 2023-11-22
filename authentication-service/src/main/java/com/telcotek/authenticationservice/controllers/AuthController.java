@@ -172,24 +172,12 @@ public class AuthController {
     public ResponseEntity<?> logoutUser() {
         ResponseCookie cookie = jwtUtils.getCleanJwtCookie();
 
-        String url = "http://localhost:8080/api/users/setOffline";
-
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        User user = authUserRepository.findByEmail(authentication.getName());
+
         if (authentication != null) {
-
-            // Define the request parameters
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
-            // Create a request body with the parameters
-            MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-            params.add("email", authentication.getName());
-
-            // Create an HttpEntity with the request body and headers
-            HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(params, headers);
-
-            // Perform the PUT request using RestTemplate
-            restTemplate.put(url, requestEntity);
+            user.setConnected(Boolean.FALSE);
         }
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString())
                 .body(new MessageResponse("You've been signed out!"));

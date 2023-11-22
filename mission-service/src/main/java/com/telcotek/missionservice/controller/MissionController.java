@@ -48,18 +48,8 @@ public class MissionController {
     } //
 
     @PostMapping("/{id}/add-tasks")
-    public ResponseEntity<Mission> assignTasks(@RequestBody List<Task> tasks ,@PathVariable("id") Long missionId) {
-        try {
-            Mission mission = missionService.assignTasksToMission(missionId,tasks);
-
-            if (tasks.equals(null) || mission.equals(null)) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            }
-
-            return new ResponseEntity<>(mission, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public void assignTasks(@RequestBody List<Task> tasks ,@PathVariable("id") Long missionId) {
+            taskService.addTasksToMission(tasks,missionId);
     }
 
     @PutMapping("/{id}/approve")
